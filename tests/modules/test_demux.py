@@ -10,6 +10,7 @@ from amaranth.cli import (
 )  # READ amaranth/cli.py to find out parameters and what it does.
 from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past, Stable, Rose, Fell, Initial
 from amaranth.back import rtlil, cxxrtl, verilog
+from amaranth._toolchain import require_tool
 import inspect
 import subprocess
 import re
@@ -108,8 +109,9 @@ class Test:
             f.write(output)
         Test._generateSbyConfig(sbyName, ilName, depth)
 
-        print(f"Running sby -f {sbyName}...")
-        with subprocess.Popen(["sby", "-f", sbyName]) as proc:
+        invoke_args = [require_tool("sby"), "-f", sbyName]
+        print(f"Running sby -f {' '.join(invoke_args)}...")
+        with subprocess.Popen(invoke_args) as proc:
             if proc.returncode is not None and proc.returncode != 0:
                 exit(proc.returncode)
 
