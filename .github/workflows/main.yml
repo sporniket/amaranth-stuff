@@ -1,0 +1,50 @@
+name: Python package
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys FA8E1301F4D3932C
+        sudo add-apt-repository 'deb http://ppa.launchpad.net/sri-csl/formal-methods/ubuntu bionic main'
+        sudo apt-get update
+        sudo apt-get install yices2
+        python -m pip install --upgrade pip
+        python -m pip install flake8 pytest 
+        pip install 'yowasp-yosys==0.20.dev398' # latest version that works on Python 3.7
+        pip install 'amaranth-yosys @ git+https://github.com/amaranth-lang/amaranth-yosys@85067f31288493989d6403527309888e839a65a3'
+    - name: Preserve Wasm cache
+      uses: actions/cache@v1
+      with:
+        path: |
+          ~/.cache/wasmtime
+          ~/.cache/yowasp
+        key: ${{ runner.os }}-wasm
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Test with pytest
+      run: |
+        export AMARANTH_USE_YOSYS=builtin YOSYS=yowasp-yosys SBY=yowasp-sby SMTBMC=yowasp-yosys-smtbmc
+        PYTHONPATH="$(pwd)/src" pytest
