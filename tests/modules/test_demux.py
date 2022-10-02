@@ -149,7 +149,7 @@ def run(width: int):
     Test.describe(
         "should assert the error bit when input is out of range",
         dut,
-        shouldAssertTheCorrectBitWhenInputIsInRange,
+        shouldAssertTheErrorBitWhenInputIsOutOfRange,
         2,
     )
 
