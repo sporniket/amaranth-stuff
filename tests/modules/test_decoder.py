@@ -33,8 +33,8 @@ def test_shouldAssertTheCorrectBitWhenInputIsInRange():
     def testBody(m: Module, cd: ClockDomain):
         rst = cd.rst
         decoder = m.submodules.dut
-        channelCount = decoder.channelCount
-        for i in range(0, channelCount):
+        span = decoder.span
+        for i in range(0, span):
             with m.If(~Past(rst) & (Past(decoder.input) == i)):
                 m.d.sync += [
                     Assert(decoder.output == (1 << i)),
@@ -55,8 +55,8 @@ def test_shouldAssertTheErrorBitWhenInputIsOutOfRange():
     def testBody(m: Module, cd: ClockDomain):
         rst = cd.rst
         decoder = m.submodules.dut
-        channelCount = decoder.channelCount
-        with m.If(~Past(rst) & (Past(decoder.input) == channelCount)):
+        span = decoder.span
+        with m.If(~Past(rst) & (Past(decoder.input) == span)):
             m.d.sync += [Assert(decoder.output == 0), Assert(decoder.outOfRange)]
 
     Test.describe(

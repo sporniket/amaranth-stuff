@@ -27,12 +27,12 @@ from amaranth.build import Platform
 
 
 class Decoder(Elaboratable):
-    def __init__(self, channelCount: int):
-        if channelCount < 2:
+    def __init__(self, span: int):
+        if span < 2:
             raise ValueError("Demux MUST have at least two channel")
-        self.channelCount = channelCount
-        self.input = Signal(range(0, channelCount))
-        self.output = Signal(channelCount, reset=1)
+        self.span = span
+        self.input = Signal(range(0, span))
+        self.output = Signal(span, reset=1)
         self.outOfRange = Signal()
 
     def ports(self) -> List[Signal]:
@@ -44,8 +44,8 @@ class Decoder(Elaboratable):
         previousInput = Signal(self.input.shape())
         with m.If(previousInput != self.input):
             m.d.sync += previousInput.eq(self.input)
-            for i in range(0, self.channelCount):
+            for i in range(0, self.span):
                 m.d.sync += self.output[i].eq(Mux(self.input == i, 1, 0))
-            m.d.sync += self.outOfRange.eq(Mux(self.input < self.channelCount, 0, 1))
+            m.d.sync += self.outOfRange.eq(Mux(self.input < self.span, 0, 1))
 
         return m
