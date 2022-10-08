@@ -1,7 +1,8 @@
 #!/bin/bash
 # clean
-rm dist/*
-rm -Rf .pytest_cache
+rm -Rf tmp.* 2>&1 >/dev/null
+rm dist/* 2>&1 >/dev/null
+rm -Rf .pytest_cache htmlcov .coverage 2>&1 >/dev/null
 # force coding style
 python3 -m black .
 # rebuild, install and test
