@@ -42,7 +42,7 @@ class SlowBeat(Elaboratable):
     def ports(self) -> List[Signal]:
         return [self.beat_p, self.beat_n]
 
-    def elaborate(self, platform: Platform) -> Module():
+    def elaborate(self, platform: Platform) -> Module:
         # sanity check
         frequencyMax = platform.default_clk_frequency // 2
         if self.frequency > frequencyMax:

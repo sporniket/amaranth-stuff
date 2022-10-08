@@ -129,7 +129,7 @@ def test_SlowRippleCounter_shouldKeepValueAtEachBeatTrailingEdge():
                 m.d.sync += [Assert(counter.value == i)]
 
     Test.describe(
-        "should increment value at each beat's leading edge",
+        "should keep value at each beat's trailing edge",
         SlowRippleCounter(3),
         testBody,
         2,
@@ -158,7 +158,7 @@ def test_SlowRippleCounter_shouldKeepValueWhenBeatDoesNotChange():
                 m.d.sync += [Assert(counter.value == i)]
 
     Test.describe(
-        "should increment value at each beat's leading edge",
+        "should keep value when beat does not change",
         SlowRippleCounter(3),
         testBody,
         2,
