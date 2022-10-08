@@ -26,28 +26,17 @@ from amaranth import *
 from amaranth.build import Platform
 
 
-class Decoder(Elaboratable):
-    """Generate a decoder that supports an input in range [0..span[."""
-
-    def __init__(self, span: int):
-        if span < 2:
-            raise ValueError("Decoder MUST have a span of at least 2.")
-        self.span = span
-        self.input = Signal(range(0, span))
-        self.output = Signal(span, reset=1)
-        self.outOfRange = Signal()
+class RippleCounter(Elaboratable):
+    def __init__(self, width: int):
+        self.width = width
+        self.value = Signal(width)
 
     def ports(self) -> List[Signal]:
-        return [self.input, self.output, self.outOfRange]
+        return [self.value]
 
     def elaborate(self, platform: Platform) -> Module:
         m = Module()
 
-        previousInput = Signal(self.input.shape())
-        with m.If(previousInput != self.input):
-            m.d.sync += previousInput.eq(self.input)
-            for i in range(0, self.span):
-                m.d.sync += self.output[i].eq(Mux(self.input == i, 1, 0))
-            m.d.sync += self.outOfRange.eq(Mux(self.input < self.span, 0, 1))
+        m.d.sync += [self.value.eq((self.value + 1)[0 : self.width])]
 
         return m
