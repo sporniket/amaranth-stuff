@@ -27,9 +27,11 @@ from amaranth.build import Platform
 
 
 class Decoder(Elaboratable):
+    """Generate a decoder that supports an input in range [0..span[.
+    """
     def __init__(self, span: int):
         if span < 2:
-            raise ValueError("Demux MUST have at least two channel")
+            raise ValueError("Decoder MUST have a span of at least 2.")
         self.span = span
         self.input = Signal(range(0, span))
         self.output = Signal(span, reset=1)
