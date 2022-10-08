@@ -25,11 +25,15 @@ from amaranth import *
 from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past, Stable, Rose, Fell, Initial
 
 ### amarant-stuff deps
-from amaranth_stuff.modules import RippleCounter
+from amaranth_stuff.modules import RippleCounter, SlowRippleCounter
 from amaranth_stuff.testing import Test
 
+###
+### Test suite on RippleCounter
+###
 
-def test_shouldIncrementValueAtEachClock():
+
+def test_RippleCounter_shouldIncrementValueAtEachClock():
     def testBody(m: Module, cd: ClockDomain):
         rst = cd.rst
         counter = m.submodules.dut
@@ -46,7 +50,7 @@ def test_shouldIncrementValueAtEachClock():
     )
 
 
-def test_shouldReturnToZeroAfterReachingMaxValueSupportedByTheWidth():
+def test_RippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByTheWidth():
     def testBody(m: Module, cd: ClockDomain):
         rst = cd.rst
         counter = m.submodules.dut
@@ -57,6 +61,105 @@ def test_shouldReturnToZeroAfterReachingMaxValueSupportedByTheWidth():
     Test.describe(
         "should return to zero after reaching the max value supported by the width",
         RippleCounter(3),
+        testBody,
+        2,
+    )
+
+
+###
+### Test suite on SlowRippleCounter
+###
+
+
+def test_SlowRippleCounter_shouldIncrementValueAtEachBeatLeadingEdge():
+    def testBody(m: Module, cd: ClockDomain):
+        rst = cd.rst
+        counter = m.submodules.dut
+        width = counter.width
+        for i in range(0, width - 1):
+            with m.If(
+                ~Past(rst)
+                & (Past(counter.value) == i)
+                & (~Past(counter.beat, 2))
+                & (Past(counter.beat))
+            ):
+                m.d.sync += [Assert(counter.value == (i + 1))]
+
+    Test.describe(
+        "should increment value at each beat's leading edge",
+        SlowRippleCounter(3),
+        testBody,
+        2,
+    )
+
+
+def test_SlowRippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByTheWidth():
+    def testBody(m: Module, cd: ClockDomain):
+        rst = cd.rst
+        counter = m.submodules.dut
+        width = counter.width
+        with m.If(
+            ~Past(rst)
+            & (Past(counter.value) == (width - 1))
+            & (~Past(counter.beat, 2))
+            & (Past(counter.beat))
+        ):
+            m.d.sync += [Assert(counter.value == 0)]
+
+    Test.describe(
+        "should return to zero after reaching the max value supported by the width",
+        SlowRippleCounter(3),
+        testBody,
+        2,
+    )
+
+
+def test_SlowRippleCounter_shouldKeepValueAtEachBeatTrailingEdge():
+    def testBody(m: Module, cd: ClockDomain):
+        rst = cd.rst
+        counter = m.submodules.dut
+        width = counter.width
+        for i in range(0, width):
+            with m.If(
+                ~Past(rst)
+                & (Past(counter.value) == i)
+                & (Past(counter.beat, 2))
+                & (~Past(counter.beat))
+            ):
+                m.d.sync += [Assert(counter.value == i)]
+
+    Test.describe(
+        "should increment value at each beat's leading edge",
+        SlowRippleCounter(3),
+        testBody,
+        2,
+    )
+
+
+def test_SlowRippleCounter_shouldKeepValueWhenBeatDoesNotChange():
+    def testBody(m: Module, cd: ClockDomain):
+        rst = cd.rst
+        counter = m.submodules.dut
+        width = counter.width
+        for i in range(0, width):
+            with m.If(
+                ~Past(rst)
+                & (Past(counter.value) == i)
+                & (Past(counter.beat, 2))
+                & (Past(counter.beat))
+            ):
+                m.d.sync += [Assert(counter.value == i)]
+            with m.If(
+                ~Past(rst)
+                & (Past(counter.value) == i)
+                & (~Past(counter.beat, 2))
+                & (~Past(counter.beat))
+            ):
+                m.d.sync += [Assert(counter.value == i)]
+
+    Test.describe(
+        "should increment value at each beat's leading edge",
+        SlowRippleCounter(3),
         testBody,
         2,
     )
