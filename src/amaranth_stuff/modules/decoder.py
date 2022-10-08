@@ -26,7 +26,7 @@ from amaranth import *
 from amaranth.build import Platform
 
 
-class Demux(Elaboratable):
+class Decoder(Elaboratable):
     def __init__(self, channelCount: int):
         if channelCount < 2:
             raise ValueError("Demux MUST have at least two channel")

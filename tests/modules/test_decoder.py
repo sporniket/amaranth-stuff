@@ -25,27 +25,27 @@ from amaranth import *
 from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past, Stable, Rose, Fell, Initial
 
 ### amarant-stuff deps
-from amaranth_stuff.modules import Demux
+from amaranth_stuff.modules import Decoder
 from amaranth_stuff.testing import Test
 
 
 def test_shouldAssertTheCorrectBitWhenInputIsInRange():
     def testBody(m: Module, cd: ClockDomain):
         rst = cd.rst
-        demux = m.submodules.dut
-        channelCount = demux.channelCount
+        decoder = m.submodules.dut
+        channelCount = decoder.channelCount
         for i in range(0, channelCount):
-            with m.If(~Past(rst) & (Past(demux.input) == i)):
+            with m.If(~Past(rst) & (Past(decoder.input) == i)):
                 m.d.sync += [
-                    Assert(demux.output == (1 << i)),
-                    Assert(~(demux.outOfRange)),
+                    Assert(decoder.output == (1 << i)),
+                    Assert(~(decoder.outOfRange)),
                 ]
 
     Test.describe(
         "should assert the correct bit according to input",
-        Demux(
+        Decoder(
             (1 << 2) - 1
-        ),  # there is 1 invalid input for testing the error signal of demux
+        ),  # there is 1 invalid input for testing the error signal of decoder
         testBody,
         2,
     )
@@ -54,16 +54,16 @@ def test_shouldAssertTheCorrectBitWhenInputIsInRange():
 def test_shouldAssertTheErrorBitWhenInputIsOutOfRange():
     def testBody(m: Module, cd: ClockDomain):
         rst = cd.rst
-        demux = m.submodules.dut
-        channelCount = demux.channelCount
-        with m.If(~Past(rst) & (Past(demux.input) == channelCount)):
-            m.d.sync += [Assert(demux.output == 0), Assert(demux.outOfRange)]
+        decoder = m.submodules.dut
+        channelCount = decoder.channelCount
+        with m.If(~Past(rst) & (Past(decoder.input) == channelCount)):
+            m.d.sync += [Assert(decoder.output == 0), Assert(decoder.outOfRange)]
 
     Test.describe(
         "should assert the error bit when input is out of range",
-        Demux(
+        Decoder(
             (1 << 2) - 1
-        ),  # there is 1 invalid input for testing the error signal of demux
+        ),  # there is 1 invalid input for testing the error signal of decoder
         testBody,
         2,
     )

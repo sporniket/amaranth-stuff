@@ -18,7 +18,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
-from .demux import Demux
+from .decoder import Decoder
 from .slowbeat import SlowBeat
 
-__all__ = ["Demux", "SlowBeat"]
+__all__ = ["Decoder", "SlowBeat"]
