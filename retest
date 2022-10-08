@@ -1,11 +1,9 @@
 #!/bin/bash
-# clean
-rm -Rf tmp.* 2>&1 >/dev/null
-rm dist/* 2>&1 >/dev/null
-rm -Rf .pytest_cache htmlcov .coverage 2>&1 >/dev/null
-# force coding style
-python3 -m black .
+# prepare workspace
+./reclean
+./reformat
 # rebuild, install and test
+echo "Rebuild, Reinstall and Run tests..."
 python3 -m build && python3 -m pip install --force-reinstall dist/*.whl && \
 python3 -m coverage run --source=amaranth_stuff --branch -m pytest && \
 python3 -m coverage report -m && \
