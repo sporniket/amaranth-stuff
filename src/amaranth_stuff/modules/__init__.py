@@ -19,5 +19,6 @@ If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
 from .demux import Demux
+from .slowbeat import SlowBeat
 
-__all__ = ["Demux"]
+__all__ = ["Demux", "SlowBeat"]

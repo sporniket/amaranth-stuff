@@ -19,11 +19,12 @@ If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
 ### builtin deps
-from typing import List # , Dict, Tuple, Optional
+from typing import List  # , Dict, Tuple, Optional
 
 ### amaranth -- main deps
 from amaranth import *
 from amaranth.build import Platform
+
 
 class Demux(Elaboratable):
     def __init__(self, channelCount: int):
