@@ -18,14 +18,12 @@ You should have received a copy of the GNU Lesser General Public License along w
 If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
-### main deps
+### builtin deps
+from typing import List # , Dict, Tuple, Optional
+
+### amaranth -- main deps
 from amaranth import *
 from amaranth.build import Platform
-from typing import List, Dict, Tuple, Optional
-
-### test deps ###
-from amaranth.sim import Simulator, Delay, Settle
-
 
 class Demux(Elaboratable):
     def __init__(self, channelCount: int):
