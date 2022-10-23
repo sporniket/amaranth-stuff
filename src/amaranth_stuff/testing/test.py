@@ -79,14 +79,9 @@ class Test:
             f.write(
                 "\n".join(
                     [
-                        "[tasks]",
-                        "bmc",
-                        "",
                         "[options]",
-                        "bmc: mode bmc",
+                        "mode bmc",
                         f"depth {depth}",
-                        "multiclock off",
-                        "wait on",
                         "",
                         "[engines]",
                         "smtbmc",
