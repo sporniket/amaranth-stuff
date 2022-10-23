@@ -39,12 +39,29 @@ class Test:
     """Just a collection of utilities"""
 
     @staticmethod
-    def _buildTestBench(dut: Elaboratable, test, cd: ClockDomain) -> Module:
+    def _generateTestBench(ilName: str, dut: Elaboratable, test, platform: Platform):
+        ###
+        # Keep references to the clock domain and the reset signal
+        # to add them to the ports
+        # otherwise the verification always pass !!
+        sync = ClockDomain("sync")
+        rst = Signal()
+        sync.rst = rst
+
+        ###
+        # Prepare testbench and convert to rtlil
         m = Module()
-        m.domains.sync = cd
+        m.domains.sync = sync
         m.submodules.dut = dut
-        test(m, cd)
-        return m
+        test(m, sync)
+
+        fragment = Fragment.get(m, platform)
+        output = rtlil.convert(
+            fragment,
+            ports=dut.ports() + [sync.rst, sync.clk],
+        )
+        with open(ilName, "wt") as f:
+            f.write(output)
 
     @staticmethod
     def _asSafeName(description: str) -> str:
@@ -115,25 +132,8 @@ class Test:
         ilName = f"tmp.{baseName}.il"
         sbyName = f"tmp.{baseName}.sby"
 
-        ###
-        # Keep references to the clock domain and the reset signal
-        # to add them to the ports
-        # otherwise the verification always pass !!
-        sync = ClockDomain("sync")
-        rst = Signal()
-        sync.rst = rst
-
-        ###
-        # Prepare testbench and convert to rtlil
-        m = Test._buildTestBench(dut, test, sync)
-        fragment = Fragment.get(m, platform)
-        output = rtlil.convert(
-            fragment,
-            ports=dut.ports() + [sync.rst, sync.clk],
-        )
         print(f"Generating {ilName}...")
-        with open(ilName, "wt") as f:
-            f.write(output)
+        Test._generateTestBench(ilName, dut, test, platform)
         Test._generateSbyConfig(sbyName, ilName, depth)
 
         invoke_args = [require_tool("sby"), "-f", sbyName]
