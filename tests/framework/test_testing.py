@@ -65,9 +65,4 @@ def test_shouldFailMiserably():
             m.d.sync += [Assert(dummy.complement & dummy.output)]
 
     with pytest.raises(CalledProcessError):
-        Test.describe(
-            "test_shouldFailMiserably",
-            DummyModule(),
-            testBody,
-            5,
-        )
+        Test.describe(DummyModule(), testBody)

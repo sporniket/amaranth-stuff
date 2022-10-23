@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
 ### builtin deps
+import inspect
 import os
 import re
 import subprocess
@@ -68,7 +69,8 @@ class Test:
                         "bmc: mode bmc",
                         f"depth {depth}",
                         "multiclock off",
-                        "wait on" "",
+                        "wait on",
+                        "",
                         "[engines]",
                         "smtbmc boolector",
                         "",
@@ -84,7 +86,12 @@ class Test:
 
     @staticmethod
     def describe(
-        description: str, dut: Elaboratable, test, depth: int, platform: Platform = None
+        dut: Elaboratable,
+        test,
+        *,
+        description: str = None,
+        depth: int = 20,
+        platform: Platform = None,
     ):
         """Perform a test on amaranth module using SymbiYosis (sby)
 
@@ -95,6 +102,12 @@ class Test:
             depth (int): The depth of the formal verification to perform
             platform (Platform): the test platform
         """
+        if description is None:
+            currFrame = inspect.currentframe()
+            callFrameStack = inspect.getouterframes(currFrame)
+            description = callFrameStack[1][3]
+            if callFrameStack[1][3] == "__main__":
+                description = test.__name__
         print(f"##########>")
         print(f"##########> {description}")
         print(f"##########>")

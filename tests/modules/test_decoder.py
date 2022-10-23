@@ -42,12 +42,10 @@ def test_shouldAssertTheCorrectBitWhenInputIsInRange():
                 ]
 
     Test.describe(
-        "should assert the correct bit according to input",
         Decoder(
             (1 << 2) - 1
         ),  # there is 1 invalid input for testing the error signal of decoder
         testBody,
-        2,
     )
 
 
@@ -60,10 +58,8 @@ def test_shouldAssertTheErrorBitWhenInputIsOutOfRange():
             m.d.sync += [Assert(decoder.output == 0), Assert(decoder.outOfRange)]
 
     Test.describe(
-        "should assert the error bit when input is out of range",
         Decoder(
             (1 << 2) - 1
         ),  # there is 1 invalid input for testing the error signal of decoder
         testBody,
-        2,
     )

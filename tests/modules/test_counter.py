@@ -38,16 +38,13 @@ def test_RippleCounter_shouldIncrementValueAtEachClock():
         rst = cd.rst
         counter = m.submodules.dut
         width = counter.width
-        for i in range(0, width - 1):
+        print(f"generate test for range = {2 ** width - 1}, width = {width}")
+        for i in range(0, 2**width - 1):
+            print(f"-- generate test for i = {i}")
             with m.If(~Past(rst) & (Past(counter.value) == i)):
                 m.d.sync += [Assert(counter.value == (i + 1))]
 
-    Test.describe(
-        "should increment value at each clock",
-        RippleCounter(3),
-        testBody,
-        2,
-    )
+    Test.describe(RippleCounter(3), testBody)
 
 
 def test_RippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByTheWidth():
@@ -55,15 +52,10 @@ def test_RippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByTheWidt
         rst = cd.rst
         counter = m.submodules.dut
         width = counter.width
-        with m.If(~Past(rst) & (Past(counter.value) == (width - 1))):
+        with m.If(~Past(rst) & (Past(counter.value) == (2**width - 1))):
             m.d.sync += [Assert(counter.value == 0)]
 
-    Test.describe(
-        "should return to zero after reaching the max value supported by the width",
-        RippleCounter(3),
-        testBody,
-        2,
-    )
+    Test.describe(RippleCounter(3), testBody)
 
 
 ###
@@ -76,7 +68,7 @@ def test_SlowRippleCounter_shouldIncrementValueAtEachBeatLeadingEdge():
         rst = cd.rst
         counter = m.submodules.dut
         width = counter.width
-        for i in range(0, width - 1):
+        for i in range(0, 2**width - 1):
             with m.If(
                 ~Past(rst)
                 & (Past(counter.value) == i)
@@ -85,12 +77,7 @@ def test_SlowRippleCounter_shouldIncrementValueAtEachBeatLeadingEdge():
             ):
                 m.d.sync += [Assert(counter.value == (i + 1))]
 
-    Test.describe(
-        "should increment value at each beat's leading edge",
-        SlowRippleCounter(3),
-        testBody,
-        2,
-    )
+    Test.describe(SlowRippleCounter(3), testBody)
 
 
 def test_SlowRippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByTheWidth():
@@ -100,18 +87,13 @@ def test_SlowRippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByThe
         width = counter.width
         with m.If(
             ~Past(rst)
-            & (Past(counter.value) == (width - 1))
+            & (Past(counter.value) == (2**width - 1))
             & (~Past(counter.beat, 2))
             & (Past(counter.beat))
         ):
             m.d.sync += [Assert(counter.value == 0)]
 
-    Test.describe(
-        "should return to zero after reaching the max value supported by the width",
-        SlowRippleCounter(3),
-        testBody,
-        2,
-    )
+    Test.describe(SlowRippleCounter(3), testBody)
 
 
 def test_SlowRippleCounter_shouldKeepValueAtEachBeatTrailingEdge():
@@ -119,7 +101,7 @@ def test_SlowRippleCounter_shouldKeepValueAtEachBeatTrailingEdge():
         rst = cd.rst
         counter = m.submodules.dut
         width = counter.width
-        for i in range(0, width):
+        for i in range(0, 2**width):
             with m.If(
                 ~Past(rst)
                 & (Past(counter.value) == i)
@@ -128,12 +110,7 @@ def test_SlowRippleCounter_shouldKeepValueAtEachBeatTrailingEdge():
             ):
                 m.d.sync += [Assert(counter.value == i)]
 
-    Test.describe(
-        "should keep value at each beat's trailing edge",
-        SlowRippleCounter(3),
-        testBody,
-        2,
-    )
+    Test.describe(SlowRippleCounter(3), testBody)
 
 
 def test_SlowRippleCounter_shouldKeepValueWhenBeatDoesNotChange():
@@ -141,25 +118,20 @@ def test_SlowRippleCounter_shouldKeepValueWhenBeatDoesNotChange():
         rst = cd.rst
         counter = m.submodules.dut
         width = counter.width
-        for i in range(0, width):
+        for i in range(0, 2**width):
             with m.If(
                 ~Past(rst)
                 & (Past(counter.value) == i)
-                & (Past(counter.beat, 2))
                 & (Past(counter.beat))
+                & (counter.beat)
             ):
                 m.d.sync += [Assert(counter.value == i)]
             with m.If(
                 ~Past(rst)
                 & (Past(counter.value) == i)
-                & (~Past(counter.beat, 2))
                 & (~Past(counter.beat))
+                & (~counter.beat)
             ):
                 m.d.sync += [Assert(counter.value == i)]
 
-    Test.describe(
-        "should keep value when beat does not change",
-        SlowRippleCounter(3),
-        testBody,
-        2,
-    )
+    Test.describe(SlowRippleCounter(3), testBody)

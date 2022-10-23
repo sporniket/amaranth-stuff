@@ -57,9 +57,7 @@ def test_shouldBeatAtSpecifiedFrequency():
         m.d.sync += [Assert(slowbeat.beat_n == ~slowbeat.beat_p)]
 
     Test.describe(
-        "should beat at specified frequency",
         SlowBeat(5),
         testBody,
-        10,
-        DummyPlatformWith10HzDefaultClock(),
+        platform=DummyPlatformWith10HzDefaultClock(),
     )
