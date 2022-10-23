@@ -19,8 +19,10 @@ If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
 ### builtin deps
-import subprocess
+import os
 import re
+import subprocess
+import sys
 
 ### amaranth -- main deps
 from amaranth import *
@@ -36,18 +38,8 @@ class Test:
     """Just a collection of utilities"""
 
     @staticmethod
-    def _clockDomain(name="sync") -> ClockDomain:
-        """Retrieve the named clock domain and make sure it has a rst signal"""
-        cd = ClockDomain(name)
-        cd.rst = (
-            Signal()
-        )  # FIXME only if cd.rst does not exist (no such attribute or none)
-        return cd
-
-    @staticmethod
-    def _buildTestBench(dut: Elaboratable, test) -> Module:
+    def _buildTestBench(dut: Elaboratable, test, cd: ClockDomain) -> Module:
         m = Module()
-        cd = Test._clockDomain("sync")
         m.domains.sync = cd
         m.submodules.dut = dut
         test(m, cd)
@@ -71,14 +63,12 @@ class Test:
                     [
                         "[tasks]",
                         "bmc",
-                        "cover",
                         "",
                         "[options]",
                         "bmc: mode bmc",
-                        "cover: mode cover",
                         f"depth {depth}",
                         "multiclock off",
-                        "",
+                        "wait on" "",
                         "[engines]",
                         "smtbmc boolector",
                         "",
@@ -112,11 +102,21 @@ class Test:
         ilName = f"tmp.{baseName}.il"
         sbyName = f"tmp.{baseName}.sby"
 
-        m = Test._buildTestBench(dut, test)
+        ###
+        # Keep references to the clock domain and the reset signal
+        # to add them to the ports
+        # otherwise the verification always pass !!
+        sync = ClockDomain("sync")
+        rst = Signal()
+        sync.rst = rst
+
+        ###
+        # Prepare testbench and convert to rtlil
+        m = Test._buildTestBench(dut, test, sync)
         fragment = Fragment.get(m, platform)
         output = rtlil.convert(
             fragment,
-            ports=dut.ports(),
+            ports=dut.ports() + [sync.rst, sync.clk],
         )
         print(f"Generating {ilName}...")
         with open(ilName, "wt") as f:
@@ -124,7 +124,5 @@ class Test:
         Test._generateSbyConfig(sbyName, ilName, depth)
 
         invoke_args = [require_tool("sby"), "-f", sbyName]
-        print(f"Running sby -f {' '.join(invoke_args)}...")
-        with subprocess.Popen(invoke_args) as proc:
-            if proc.returncode is not None and proc.returncode != 0:
-                exit(proc.returncode)
+        print(f"Running {' '.join(invoke_args)}...")
+        subprocess.run(invoke_args).check_returncode()
