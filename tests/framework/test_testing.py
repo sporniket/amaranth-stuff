@@ -18,6 +18,11 @@ You should have received a copy of the GNU Lesser General Public License along w
 If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
+### builtin deps
+import pytest
+from subprocess import CalledProcessError
+from typing import List  # , Dict, Tuple, Optional
+
 ### amaranth -- main deps
 from amaranth import *
 from amaranth.build import Platform
@@ -26,7 +31,6 @@ from amaranth.build import Platform
 from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past, Stable, Rose, Fell, Initial
 
 ### amarant-stuff deps
-from amaranth_stuff.modules import SlowBeat
 from amaranth_stuff.testing import Test
 
 
@@ -34,31 +38,31 @@ from amaranth_boards.resources import *  # from .resources import *
 from amaranth.build import Resource, Clock, Pins
 
 
-class DummyPlatformWith10HzDefaultClock(Platform):
-    default_clk = "clk10"
-    connectors = []
-    resources = [
-        Resource("clk10", 0, Pins("Whatever", dir="i"), Clock(10)),
-    ]
-    required_tools = []
+class DummyModule(Elaboratable):
+    def __init__(self):
+        self.input = Signal()
+        self.output = Signal()
+        self.complement = Signal(reset=1)
 
-    def toolchain_prepare(self, fragment, name, **kwargs):
-        return None
+    def ports(self) -> List[Signal]:
+        return [self.input, self.output, self.complement]
+
+    def elaborate(self, platform: Platform) -> Module:
+        m = Module()
+        m.d.comb += self.complement.eq(~self.output)
+        m.d.sync += self.output.eq(self.input)
+        return m
 
 
-def test_shouldBeatAtSpecifiedFrequency():
+def test_shouldFailMiserably():
     def testBody(m: Module, cd: ClockDomain):
-        rst = cd.rst
-        slowbeat = m.submodules.dut
-        # Does not work
-        # with m.If(~Past(rst) & (Past(slowbeat.beat_p))):
-        #    m.d.sync += [Assert(~slowbeat.beat_p)]
-        with m.If(~Past(rst) & (~Past(slowbeat.beat_p))):
-            m.d.sync += [Assert(slowbeat.beat_p)]
-        m.d.sync += [Assert(slowbeat.beat_n == ~slowbeat.beat_p)]
+        dummy = m.submodules.dut
+        input = Signal()
+        m.d.comb += dummy.input.eq(input)
+        with m.If(Past(cd.rst)):
+            m.d.sync += Assert(dummy.complement & dummy.output)
+        with m.If(~Past(cd.rst) & Past(input)):
+            m.d.sync += [Assert(dummy.complement & dummy.output)]
 
-    Test.describe(
-        SlowBeat(5),
-        testBody,
-        platform=DummyPlatformWith10HzDefaultClock(),
-    )
+    with pytest.raises(CalledProcessError):
+        Test.describe(DummyModule(), testBody)

@@ -19,8 +19,11 @@ If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
 ### builtin deps
-import subprocess
+import inspect
+import os
 import re
+import subprocess
+import sys
 
 ### amaranth -- main deps
 from amaranth import *
@@ -36,22 +39,29 @@ class Test:
     """Just a collection of utilities"""
 
     @staticmethod
-    def _clockDomain(name="sync") -> ClockDomain:
-        """Retrieve the named clock domain and make sure it has a rst signal"""
-        cd = ClockDomain(name)
-        cd.rst = (
-            Signal()
-        )  # FIXME only if cd.rst does not exist (no such attribute or none)
-        return cd
+    def _generateTestBench(ilName: str, dut: Elaboratable, test, platform: Platform):
+        ###
+        # Keep references to the clock domain and the reset signal
+        # to add them to the ports
+        # otherwise the verification always pass !!
+        sync = ClockDomain("sync")
+        rst = Signal()
+        sync.rst = rst
 
-    @staticmethod
-    def _buildTestBench(dut: Elaboratable, test) -> Module:
+        ###
+        # Prepare testbench and convert to rtlil
         m = Module()
-        cd = Test._clockDomain("sync")
-        m.domains.sync = cd
+        m.domains.sync = sync
         m.submodules.dut = dut
-        test(m, cd)
-        return m
+        test(m, sync)
+
+        fragment = Fragment.get(m, platform)
+        output = rtlil.convert(
+            fragment,
+            ports=dut.ports() + [sync.rst, sync.clk],
+        )
+        with open(ilName, "wt") as f:
+            f.write(output)
 
     @staticmethod
     def _asSafeName(description: str) -> str:
@@ -69,18 +79,12 @@ class Test:
             f.write(
                 "\n".join(
                     [
-                        "[tasks]",
-                        "bmc",
-                        "cover",
-                        "",
                         "[options]",
-                        "bmc: mode bmc",
-                        "cover: mode cover",
+                        "mode bmc",
                         f"depth {depth}",
-                        "multiclock off",
                         "",
                         "[engines]",
-                        "smtbmc boolector",
+                        "smtbmc",
                         "",
                         "[script]",
                         f"read_ilang {ilName}",
@@ -94,7 +98,12 @@ class Test:
 
     @staticmethod
     def describe(
-        description: str, dut: Elaboratable, test, depth: int, platform: Platform = None
+        dut: Elaboratable,
+        test,
+        *,
+        description: str = None,
+        depth: int = 20,
+        platform: Platform = None,
     ):
         """Perform a test on amaranth module using SymbiYosis (sby)
 
@@ -105,6 +114,12 @@ class Test:
             depth (int): The depth of the formal verification to perform
             platform (Platform): the test platform
         """
+        if description is None:
+            currFrame = inspect.currentframe()
+            callFrameStack = inspect.getouterframes(currFrame)
+            description = callFrameStack[1][3]
+            if callFrameStack[1][3] == "__main__":
+                description = test.__name__
         print(f"##########>")
         print(f"##########> {description}")
         print(f"##########>")
@@ -112,19 +127,10 @@ class Test:
         ilName = f"tmp.{baseName}.il"
         sbyName = f"tmp.{baseName}.sby"
 
-        m = Test._buildTestBench(dut, test)
-        fragment = Fragment.get(m, platform)
-        output = rtlil.convert(
-            fragment,
-            ports=dut.ports(),
-        )
         print(f"Generating {ilName}...")
-        with open(ilName, "wt") as f:
-            f.write(output)
+        Test._generateTestBench(ilName, dut, test, platform)
         Test._generateSbyConfig(sbyName, ilName, depth)
 
         invoke_args = [require_tool("sby"), "-f", sbyName]
-        print(f"Running sby -f {' '.join(invoke_args)}...")
-        with subprocess.Popen(invoke_args) as proc:
-            if proc.returncode is not None and proc.returncode != 0:
-                exit(proc.returncode)
+        print(f"Running {' '.join(invoke_args)}...")
+        subprocess.run(invoke_args).check_returncode()
