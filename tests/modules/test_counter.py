@@ -38,7 +38,7 @@ def test_RippleCounter_shouldIncrementValueAtEachClock():
         rst = cd.rst
         counter = m.submodules.dut
         width = counter.width
-        for i in range(1, 2**width - 1): # Does not work for i = 0 !!
+        for i in range(1, 2**width - 1):  # Does not work for i = 0 !!
             with m.If(~Past(rst) & (Past(counter.value) == Const(i, unsigned(width)))):
                 m.d.sync += [Assert(counter.value == Const(i + 1, unsigned(width)))]
 
@@ -116,18 +116,18 @@ def test_SlowRippleCounter_shouldKeepValueWhenBeatDoesNotChange():
         rst = cd.rst
         counter = m.submodules.dut
         width = counter.width
-        for i in range(1, 2**width): # Does not work for i = 0 !!
+        for i in range(1, 2**width):  # Does not work for i = 0 !!
             with m.If(
                 ~Past(rst)
                 & (Past(counter.value) == i)
-                & (Past(counter.beat,2))
+                & (Past(counter.beat, 2))
                 & (Past(counter.beat))
             ):
                 m.d.sync += [Assert(counter.value == i)]
             with m.If(
                 ~Past(rst)
                 & (Past(counter.value) == i)
-                & (~Past(counter.beat,2))
+                & (~Past(counter.beat, 2))
                 & (~Past(counter.beat))
             ):
                 m.d.sync += [Assert(counter.value == i)]

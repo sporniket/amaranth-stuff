@@ -89,7 +89,7 @@ class Test:
                         "wait on",
                         "",
                         "[engines]",
-                        "smtbmc boolector",
+                        "smtbmc",
                         "",
                         "[script]",
                         f"read_ilang {ilName}",
