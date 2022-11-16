@@ -39,8 +39,18 @@ def test_RippleCounter_shouldIncrementValueAtEachClock():
         counter = m.submodules.dut
         width = counter.width
         for i in range(1, 2**width - 1):  # Does not work for i = 0 !!
-            with m.If(~Past(rst) & (Past(counter.value) == Const(i, unsigned(width)))):
-                m.d.sync += [Assert(counter.value == Const(i + 1, unsigned(width)))]
+            with m.If((~Past(rst)) & (Past(counter.value) == i)):
+                m.d.sync += [Assert(counter.value == (Past(counter.value) + 1))]
+        with m.If((Past(rst, 2)) & (~Past(rst))):
+            # first situation when Past(counter.value) == 0
+            m.d.sync += [Assert(counter.value == 1)]
+        with m.If(
+            (~Past(rst, 2))
+            & (~Past(rst))
+            & (Past(counter.value, 2) == (2**width - 1))
+        ):
+            # second situation when Past(counter.value) == 0
+            m.d.sync += [Assert(counter.value == 1)]
 
     Test.describe(RippleCounter(3), testBody)
 
