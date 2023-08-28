@@ -1,6 +1,6 @@
 """
 ---
-(c) 2022 David SPORN
+(c) 2022,2023 David SPORN
 ---
 This is part of Sporniket's "Amaranth Stuff" project.
 
