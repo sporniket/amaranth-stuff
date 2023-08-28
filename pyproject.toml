@@ -29,7 +29,7 @@ classifiers = [
 dependencies = [
     "amaranth @ git+https://github.com/amaranth-lang/amaranth@3a51b612844a23b08e744c4b3372ecb44bf9fe5d",
     "amaranth-boards @ git+https://github.com/amaranth-lang/amaranth-boards@2d0a23b75ebb769874719297dec65ff07ca9e79f",
-    'importlib-metadata; python_version>="3.8"',
+    "importlib_resources; python_version<'3.9'", # for amaranth._toolchain.yosys
 ]
 dynamic = ["version"]
 
