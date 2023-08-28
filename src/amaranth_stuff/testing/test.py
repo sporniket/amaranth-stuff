@@ -34,6 +34,9 @@ from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past,
 from amaranth.back import rtlil  # , cxxrtl, verilog
 from amaranth._toolchain import require_tool  # May need to be re-implemented locally
 
+### internal
+from .TestBench import *
+
 
 class Test:
     """Just a collection of utilities"""
@@ -53,6 +56,7 @@ class Test:
         m = Module()
         m.domains.sync = sync
         m.submodules.dut = dut
+        m.submodules.testBench = TestBench()
         test(m, sync)
 
         fragment = Fragment.get(m, platform)
