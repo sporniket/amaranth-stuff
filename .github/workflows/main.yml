@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.9", "3.10"]
 
     steps:
     - uses: actions/checkout@v3
@@ -30,9 +30,9 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest 
         pip install 'yowasp-yosys==0.20.dev398' # latest version that works on Python 3.7
-        pip install 'amaranth @ git+https://github.com/amaranth-lang/amaranth@3a51b612844a23b08e744c4b3372ecb44bf9fe5d'
-        pip install 'amaranth-boards @ git+https://github.com/amaranth-lang/amaranth-boards@2d0a23b75ebb769874719297dec65ff07ca9e79f'
-        pip install 'amaranth-yosys @ git+https://github.com/amaranth-lang/amaranth-yosys@85067f31288493989d6403527309888e839a65a3'
+        pip install 'amaranth @ git+https://github.com/amaranth-lang/amaranth@f95fe451861066ae7e3ae6c9eb85778de5e949e0'
+        pip install 'amaranth-boards @ git+https://github.com/amaranth-lang/amaranth-boards@91ffa38e788a691464a6873d44537eece72ef76e'
+        pip install 'amaranth-yosys @ git+https://github.com/amaranth-lang/amaranth-yosys@6159fedd0d36ae9db040d7f49acf4fc9b658beaa'
     - name: Preserve Wasm cache
       uses: actions/cache@v1
       with:
