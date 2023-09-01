@@ -37,6 +37,8 @@ class Story:
 
 
 class TestBench(Elaboratable):
+    __test__ = False  # so that pytest does NOT try to collect it
+
     def __init__(self):
         self._ports = []
         self._loggers = {}
