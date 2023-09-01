@@ -40,6 +40,9 @@ from amaranth_stuff.testing import Test
 
 def test_Logger_should_use_signals_with_same_shape_and_reset_value():
     logger = Logger(Signal(signed(5), reset=3), 6)
+    # This is a pure python test, so of course the logger will not be used.
+    logger._MustUse__silence = True
+
     assert logger.source.shape().width == 5 and logger.source.shape().signed == True
     assert len(logger.logs) == 7
     for i in logger.logs:
