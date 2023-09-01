@@ -30,9 +30,7 @@ from amaranth.build import Platform
 class Logger(Elaboratable):
     def __init__(self, source, size):
         self.source = source
-        self.logs = [
-            Signal(source.shape(), reset=source.reset) for i in range(0, size + 1)
-        ]
+        self.logs = [Signal.like(source) for i in range(0, size + 1)]
 
     def ports(self):
         return self.logs
