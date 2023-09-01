@@ -33,7 +33,7 @@ from amaranth_stuff.testing import Test
 
 
 ###
-### Test suite on TestBench
+### Test suite on TestBench -- basic features
 ###
 
 
@@ -110,3 +110,64 @@ def test_testBench_is_a_submodule_of_m():
             m.d.sync += [Assert(~b)]  # should succeed
 
     Test.describe(Dummy(), testBody)
+
+
+###
+### Test suite on TestBench -- storybook features
+###
+
+
+def test_testBench_provide_helper_to_test_stories():
+    class DummyCounter(Elaboratable):
+        def __init__(self, width):
+            self.out = Signal(width)
+            self.chipSelect = Signal()
+            self.reset = Signal()
+
+        def ports(self) -> List[Signal]:
+            return [self.reset, self.chipSelect, self.out]
+
+        def elaborate(self, platform: Platform) -> Module:
+            m = Module()
+
+            with m.If(self.reset):
+                m.d.sync += self.out.eq(0)
+            with m.Elif(self.chipSelect):
+                m.d.sync += self.out.eq((self.out + 1)[0:2])
+
+            return m
+
+    def testBody(m: Module, cd: ClockDomain):
+        rst = cd.rst
+        tb = m.submodules.testBench
+        counter = m.submodules.dut
+
+        tb.givenStoryBook(
+            participants={"rst": counter.reset, "cs": counter.chipSelect},
+            stories=[
+                Story("nominal", {"rst": [1, 0, 0], "cs": [1, 1, 1]}),
+                Story(
+                    "cycle",
+                    {
+                        "rst": [1, 0, 0, 0, 0],
+                        "cs": [1, 1, 1, 1, 1],
+                    },
+                ),
+                Story(
+                    "reset happens",
+                    {
+                        "rst": [1, 0, 0, 1, 0],
+                        "cs": [1, 1, 1, 1, 1],
+                    },
+                ),
+            ],
+        )
+
+        with m.If(tb.matchesStory("nominal")):
+            m.d.sync += Assert(counter.out == 2)
+        with m.If(tb.matchesStory("cycle")):
+            m.d.sync += Assert(counter.out == 0)
+        with m.If(tb.matchesStory("reset happens")):
+            m.d.sync += Assert(counter.out == 1)
+
+    Test.describe(DummyCounter(2), testBody)
