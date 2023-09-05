@@ -83,4 +83,4 @@ def test_Logger_should_log_signal_history():
                 & logger.logs[5]
             )
 
-    Test.describe(Logger(Signal(), 5), testBody)
+    Test.perform(Logger(Signal(), 5), testBody)

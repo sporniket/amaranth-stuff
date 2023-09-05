@@ -66,7 +66,7 @@ def test_RippleCounter_shouldIncrementValueAtEachClock():
             with m.If(tb.matchesStory(f"After value has reached {i}")):
                 m.d.sync += Assert(counter.value == (i + 1))
 
-    Test.describe(RippleCounter(3), testBody)
+    Test.perform(RippleCounter(3), testBody)
 
 
 def test_RippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByTheWidth():
@@ -90,7 +90,7 @@ def test_RippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByTheWidt
         with m.If(tb.matchesStory("After the counter has reached the max value")):
             m.d.sync += Assert(counter.value == 0)
 
-    Test.describe(RippleCounter(3), testBody)
+    Test.perform(RippleCounter(3), testBody)
 
 
 ###
@@ -121,7 +121,7 @@ def test_SlowRippleCounter_shouldIncrementValueAtEachBeatLeadingEdge():
             with m.If(tb.matchesStory(f"Beat after value has reached {i}")):
                 m.d.sync += Assert(counter.value == (i + 1))
 
-    Test.describe(SlowRippleCounter(3), testBody)
+    Test.perform(SlowRippleCounter(3), testBody)
 
 
 def test_SlowRippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByTheWidth():
@@ -145,7 +145,7 @@ def test_SlowRippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByThe
         with m.If(tb.matchesStory("Beat after value has reached maxValue")):
             m.d.sync += Assert(counter.value == 0)
 
-    Test.describe(SlowRippleCounter(3), testBody)
+    Test.perform(SlowRippleCounter(3), testBody)
 
 
 def test_SlowRippleCounter_shouldKeepValueAtEachBeatTrailingEdge():
@@ -171,7 +171,7 @@ def test_SlowRippleCounter_shouldKeepValueAtEachBeatTrailingEdge():
             with m.If(tb.matchesStory(f"Beat falling after value has reached {i}")):
                 m.d.sync += Assert(counter.value == i)
 
-    Test.describe(SlowRippleCounter(3), testBody)
+    Test.perform(SlowRippleCounter(3), testBody)
 
 
 def test_SlowRippleCounter_shouldKeepValueWhenBeatDoesNotChange():
@@ -210,4 +210,4 @@ def test_SlowRippleCounter_shouldKeepValueWhenBeatDoesNotChange():
             ):
                 m.d.sync += Assert(counter.value == i)
 
-    Test.describe(SlowRippleCounter(3), testBody)
+    Test.perform(SlowRippleCounter(3), testBody)

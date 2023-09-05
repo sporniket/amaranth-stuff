@@ -76,7 +76,7 @@ def test_testbench_can_register_new_ports():
         with m.If(ftb.matchesStory("after negating a")):
             m.d.sync += [Assert(b), Assert(~c)]
 
-    Test.describe(TestBench(), testBody)
+    Test.perform(TestBench(), testBody)
 
 
 def test_with_failing_test():
@@ -99,7 +99,7 @@ def test_with_failing_test():
             m.d.sync += Assert(b)  # MUST fail : b is setup to be (~a)
 
     with pytest.raises(CalledProcessError):
-        Test.describe(TestBench(), testBody)
+        Test.perform(TestBench(), testBody)
 
 
 ###
@@ -160,4 +160,4 @@ def test_testBench_provide_helper_to_test_stories():
         with m.If(tb.matchesStory("reset happens")):
             m.d.sync += Assert(counter.out == 1)
 
-    Test.describe(DummyCounter(2), testBody)
+    Test.perform(DummyCounter(2), testBody)

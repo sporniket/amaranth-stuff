@@ -77,4 +77,4 @@ def test_shouldFailMiserably():
             )  # fails because complement = not(output)
 
     with pytest.raises(CalledProcessError):
-        Test.describe(DummyModule(), testBody)
+        Test.perform(DummyModule(), testBody)

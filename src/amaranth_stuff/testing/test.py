@@ -101,7 +101,7 @@ class Test:
             )
 
     @staticmethod
-    def describe(
+    def perform(
         dut: Elaboratable,
         test,
         *,

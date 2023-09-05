@@ -50,7 +50,7 @@ def test_shouldAssertTheCorrectBitWhenInputIsInRange():
                     Assert(~(decoder.outOfRange)),
                 ]
 
-    Test.describe(
+    Test.perform(
         Decoder(
             (1 << 2) - 1
         ),  # there is 1 invalid input for testing the error signal of decoder
@@ -74,7 +74,7 @@ def test_shouldAssertTheErrorBitWhenInputIsOutOfRange():
         with m.If(tb.matchesStory("When input is out of range")):
             m.d.sync += [Assert(decoder.output == 0), Assert(decoder.outOfRange)]
 
-    Test.describe(
+    Test.perform(
         Decoder(
             (1 << 2) - 1
         ),  # there is 1 invalid input for testing the error signal of decoder
