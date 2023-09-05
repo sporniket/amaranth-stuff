@@ -26,7 +26,7 @@ from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past,
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import Decoder
-from amaranth_stuff.testing import Test
+from amaranth_stuff.testing import Test, Story
 
 
 def test_shouldAssertTheCorrectBitWhenInputIsInRange():
@@ -34,8 +34,17 @@ def test_shouldAssertTheCorrectBitWhenInputIsInRange():
         rst = cd.rst
         decoder = m.submodules.dut
         span = decoder.span
+
+        tb = m.submodules.testBench
+        tb.givenStoryBook(
+            participants={"rst": rst, "input": decoder.input},
+            stories=[
+                Story(f"When input is {i}", {"rst": [0], "input": [i]})
+                for i in range(0, span)
+            ],
+        )
         for i in range(0, span):
-            with m.If(~Past(rst) & (Past(decoder.input) == i)):
+            with m.If(tb.matchesStory(f"When input is {i}")):
                 m.d.sync += [
                     Assert(decoder.output == (1 << i)),
                     Assert(~(decoder.outOfRange)),
@@ -54,7 +63,15 @@ def test_shouldAssertTheErrorBitWhenInputIsOutOfRange():
         rst = cd.rst
         decoder = m.submodules.dut
         span = decoder.span
-        with m.If(~Past(rst) & (Past(decoder.input) == span)):
+
+        tb = m.submodules.testBench
+        tb.givenStoryBook(
+            participants={"rst": rst, "input": decoder.input},
+            stories=[
+                Story("When input is out of range", {"rst": [0], "input": [span]})
+            ],
+        )
+        with m.If(tb.matchesStory("When input is out of range")):
             m.d.sync += [Assert(decoder.output == 0), Assert(decoder.outOfRange)]
 
     Test.describe(

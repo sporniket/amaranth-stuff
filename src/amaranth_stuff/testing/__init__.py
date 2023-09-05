@@ -19,5 +19,6 @@ If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
 from .test import Test
+from .TestBench import Story
 
-__all__ = ["Test"]
+__all__ = ["Test", "Story"]

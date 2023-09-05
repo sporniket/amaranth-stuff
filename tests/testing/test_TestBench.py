@@ -60,12 +60,21 @@ def test_testbench_can_register_new_ports():
         m.d.sync += b.eq(~a)
         m.d.sync += c.eq(a)
 
-        with m.If(~Past(rst) & ~rst & Past(a)):
-            m.d.sync += [Assert(~b)]
-            m.d.sync += [Assert(c)]
-        with m.If(~Past(rst) & ~rst & ~Past(a)):
-            m.d.sync += [Assert(b)]
-            m.d.sync += [Assert(~c)]
+        # Use the framework testbench
+        ftb = m.submodules.testBench
+        ftb.givenStoryBook(
+            participants={"rst": rst, "a": a},
+            stories=[
+                Story("after asserting a", {"rst": [0, 0], "a": [1]}),
+                Story("after negating a", {"rst": [0, 0], "a": [0]}),
+            ],
+        )
+
+        with m.If(ftb.matchesStory("after asserting a")):
+            m.d.sync += [Assert(~b), Assert(c)]
+
+        with m.If(ftb.matchesStory("after negating a")):
+            m.d.sync += [Assert(b), Assert(~c)]
 
     Test.describe(TestBench(), testBody)
 
@@ -79,37 +88,18 @@ def test_with_failing_test():
         b = tb.registerPort(Signal(name="b", reset=1))
         m.d.sync += b.eq(~a)
 
-        with m.If(~Past(rst) & ~rst & Past(a)):
-            m.d.sync += [Assert(b)]  # should fail, b is setup to be (~a)
+        # Use the framework testbench
+        ftb = m.submodules.testBench
+        ftb.givenStoryBook(
+            participants={"rst": rst, "a": a},
+            stories=[Story("after asserting a", {"rst": [0, 0], "a": [1]})],
+        )
+
+        with m.If(ftb.matchesStory("after asserting a")):
+            m.d.sync += Assert(b)  # MUST fail : b is setup to be (~a)
 
     with pytest.raises(CalledProcessError):
         Test.describe(TestBench(), testBody)
-
-
-def test_testBench_is_a_submodule_of_m():
-    class Dummy(Elaboratable):
-        def __init__(self):
-            self._ports = []
-
-        def ports(self) -> List[Signal]:
-            return self._ports
-
-        def elaborate(self, platform: Platform) -> Module:
-            m = Module()
-            return m
-
-    def testBody(m: Module, cd: ClockDomain):
-        rst = cd.rst
-        tb = m.submodules.testBench
-
-        a = tb.registerPort(Signal())
-        b = tb.registerPort(Signal(name="b", reset=1))
-        m.d.sync += b.eq(~a)
-
-        with m.If(~Past(rst) & ~rst & Past(a)):
-            m.d.sync += [Assert(~b)]  # should succeed
-
-    Test.describe(Dummy(), testBody)
 
 
 ###

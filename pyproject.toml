@@ -26,8 +26,8 @@ classifiers = [
     "Environment :: Console",
 ]
 dependencies = [
-    "amaranth @ git+https://github.com/amaranth-lang/amaranth@3a51b612844a23b08e744c4b3372ecb44bf9fe5d",
-    "amaranth-boards @ git+https://github.com/amaranth-lang/amaranth-boards@2d0a23b75ebb769874719297dec65ff07ca9e79f",
+    'amaranth @ git+https://github.com/amaranth-lang/amaranth@f135226a79fddf5caf894030ac7f49995774c3a7',
+    'amaranth-boards @ git+https://github.com/amaranth-lang/amaranth-boards@91ffa38e788a691464a6873d44537eece72ef76e',
     'importlib-metadata; python_version>"3.8"',
 ]
 dynamic = ["version"]

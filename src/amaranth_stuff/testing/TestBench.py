@@ -31,6 +31,12 @@ from .Logger import *
 
 
 class Story:
+    """A Story represents a set of sequences of values for each participants.
+
+    Each sequence is described from the oldest to the latest value. When the length of sequences are
+    not the same, the longest sequences are starting before to end simultaneously.
+    """
+
     def __init__(self, title, content):
         self.title = title
         self.content = content

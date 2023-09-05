@@ -31,7 +31,7 @@ from amaranth.build import Platform
 from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past, Stable, Rose, Fell, Initial
 
 ### amarant-stuff deps
-from amaranth_stuff.testing import Test
+from amaranth_stuff.testing import Test, Story
 
 
 from amaranth_boards.resources import *  # from .resources import *
@@ -57,12 +57,24 @@ class DummyModule(Elaboratable):
 def test_shouldFailMiserably():
     def testBody(m: Module, cd: ClockDomain):
         dummy = m.submodules.dut
-        input = Signal()
-        m.d.comb += dummy.input.eq(input)
-        with m.If(Past(cd.rst)):
-            m.d.sync += Assert(dummy.complement & dummy.output)
-        with m.If(~Past(cd.rst) & Past(input)):
-            m.d.sync += [Assert(dummy.complement & dummy.output)]
+
+        tb = m.submodules.testBench
+        tb.givenStoryBook(
+            participants={"rst": cd.rst, "input": dummy.input},
+            stories=[
+                Story("Reset", {"rst": [1]}),
+                Story("Not reset", {"rst": [0], "input": [1]}),
+            ],
+        )
+
+        with m.If(tb.matchesStory("Reset")):
+            m.d.sync += Assert(
+                dummy.complement & dummy.output
+            )  # fails because complement = not(output)
+        with m.If(tb.matchesStory("Not reset")):
+            m.d.sync += Assert(
+                dummy.complement & dummy.output
+            )  # fails because complement = not(output)
 
     with pytest.raises(CalledProcessError):
         Test.describe(DummyModule(), testBody)

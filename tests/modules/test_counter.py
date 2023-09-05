@@ -26,7 +26,7 @@ from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past,
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import RippleCounter, SlowRippleCounter
-from amaranth_stuff.testing import Test
+from amaranth_stuff.testing import Test, Story
 
 ###
 ### Test suite on RippleCounter
@@ -38,19 +38,33 @@ def test_RippleCounter_shouldIncrementValueAtEachClock():
         rst = cd.rst
         counter = m.submodules.dut
         width = counter.width
-        for i in range(1, 2**width - 1):  # Does not work for i = 0 !!
-            with m.If((~Past(rst)) & (Past(counter.value) == i)):
-                m.d.sync += [Assert(counter.value == (Past(counter.value) + 1))]
-        with m.If((Past(rst, 2)) & (~Past(rst))):
-            # first situation when Past(counter.value) == 0
-            m.d.sync += [Assert(counter.value == 1)]
-        with m.If(
-            (~Past(rst, 2))
-            & (~Past(rst))
-            & (Past(counter.value, 2) == (2**width - 1))
-        ):
-            # second situation when Past(counter.value) == 0
-            m.d.sync += [Assert(counter.value == 1)]
+        maxRange = 2**width
+        maxValue = maxRange - 1
+
+        tb = m.submodules.testBench
+        tb.givenStoryBook(
+            participants={"rst": rst, "value": counter.value},
+            stories=[
+                Story("After reset has been negated", {"rst": [1, 0]}),
+                Story(
+                    "After value has reached 0",
+                    {"rst": [0, 0], "value": [maxValue, 0]},
+                ),
+            ]
+            + [
+                Story(
+                    f"After value has reached {i}",
+                    {"rst": [0], "value": [i]},
+                )
+                for i in range(1, maxValue)
+            ],
+        )
+
+        with m.If(tb.matchesStory("After reset has been negated")):
+            m.d.sync += Assert(counter.value == 1)
+        for i in range(0, maxValue):
+            with m.If(tb.matchesStory(f"After value has reached {i}")):
+                m.d.sync += Assert(counter.value == (i + 1))
 
     Test.describe(RippleCounter(3), testBody)
 
@@ -60,8 +74,21 @@ def test_RippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByTheWidt
         rst = cd.rst
         counter = m.submodules.dut
         width = counter.width
-        with m.If(~Past(rst) & (Past(counter.value) == (2**width - 1))):
-            m.d.sync += [Assert(counter.value == 0)]
+        maxRange = 2**width
+        maxValue = maxRange - 1
+
+        tb = m.submodules.testBench
+        tb.givenStoryBook(
+            participants={"rst": rst, "value": counter.value},
+            stories=[
+                Story(
+                    "After the counter has reached the max value",
+                    {"rst": [0], "value": [maxValue]},
+                ),
+            ],
+        )
+        with m.If(tb.matchesStory("After the counter has reached the max value")):
+            m.d.sync += Assert(counter.value == 0)
 
     Test.describe(RippleCounter(3), testBody)
 
@@ -76,14 +103,23 @@ def test_SlowRippleCounter_shouldIncrementValueAtEachBeatLeadingEdge():
         rst = cd.rst
         counter = m.submodules.dut
         width = counter.width
-        for i in range(0, 2**width - 1):
-            with m.If(
-                ~Past(rst)
-                & (Past(counter.value) == i)
-                & (~Past(counter.beat, 2))
-                & (Past(counter.beat))
-            ):
-                m.d.sync += [Assert(counter.value == (i + 1))]
+        maxRange = 2**width
+        maxValue = maxRange - 1
+
+        tb = m.submodules.testBench
+        tb.givenStoryBook(
+            participants={"rst": rst, "value": counter.value, "beat": counter.beat},
+            stories=[
+                Story(
+                    f"Beat after value has reached {i}",
+                    {"rst": [0], "value": [i], "beat": [0, 1]},
+                )
+                for i in range(0, maxValue)
+            ],
+        )
+        for i in range(0, maxValue):
+            with m.If(tb.matchesStory(f"Beat after value has reached {i}")):
+                m.d.sync += Assert(counter.value == (i + 1))
 
     Test.describe(SlowRippleCounter(3), testBody)
 
@@ -93,13 +129,21 @@ def test_SlowRippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByThe
         rst = cd.rst
         counter = m.submodules.dut
         width = counter.width
-        with m.If(
-            ~Past(rst)
-            & (Past(counter.value) == (2**width - 1))
-            & (~Past(counter.beat, 2))
-            & (Past(counter.beat))
-        ):
-            m.d.sync += [Assert(counter.value == 0)]
+        maxRange = 2**width
+        maxValue = maxRange - 1
+
+        tb = m.submodules.testBench
+        tb.givenStoryBook(
+            participants={"rst": rst, "value": counter.value, "beat": counter.beat},
+            stories=[
+                Story(
+                    "Beat after value has reached maxValue",
+                    {"rst": [0], "value": [maxValue], "beat": [0, 1]},
+                )
+            ],
+        )
+        with m.If(tb.matchesStory("Beat after value has reached maxValue")):
+            m.d.sync += Assert(counter.value == 0)
 
     Test.describe(SlowRippleCounter(3), testBody)
 
@@ -109,14 +153,23 @@ def test_SlowRippleCounter_shouldKeepValueAtEachBeatTrailingEdge():
         rst = cd.rst
         counter = m.submodules.dut
         width = counter.width
-        for i in range(0, 2**width):
-            with m.If(
-                ~Past(rst)
-                & (Past(counter.value) == i)
-                & (Past(counter.beat, 2))
-                & (~Past(counter.beat))
-            ):
-                m.d.sync += [Assert(counter.value == i)]
+        maxRange = 2**width
+        maxValue = maxRange - 1
+
+        tb = m.submodules.testBench
+        tb.givenStoryBook(
+            participants={"rst": rst, "value": counter.value, "beat": counter.beat},
+            stories=[
+                Story(
+                    f"Beat falling after value has reached {i}",
+                    {"rst": [0], "value": [i], "beat": [1, 0]},
+                )
+                for i in range(0, maxRange)
+            ],
+        )
+        for i in range(0, maxRange):
+            with m.If(tb.matchesStory(f"Beat falling after value has reached {i}")):
+                m.d.sync += Assert(counter.value == i)
 
     Test.describe(SlowRippleCounter(3), testBody)
 
@@ -126,20 +179,35 @@ def test_SlowRippleCounter_shouldKeepValueWhenBeatDoesNotChange():
         rst = cd.rst
         counter = m.submodules.dut
         width = counter.width
-        for i in range(1, 2**width):  # Does not work for i = 0 !!
+        maxRange = 2**width
+        maxValue = maxRange - 1
+
+        tb = m.submodules.testBench
+        tb.givenStoryBook(
+            participants={"rst": rst, "value": counter.value, "beat": counter.beat},
+            stories=[
+                Story(
+                    f"Beat stay negated after value has reached {i}",
+                    {"rst": [0, 0], "value": [i], "beat": [0, 0]},
+                )
+                for i in range(0, maxRange)
+            ]
+            + [
+                Story(
+                    f"Beat stay asserted after value has reached {i}",
+                    {"rst": [0, 0], "value": [i], "beat": [1, 1]},
+                )
+                for i in range(0, maxRange)
+            ],
+        )
+        for i in range(0, maxRange):
             with m.If(
-                ~Past(rst)
-                & (Past(counter.value) == i)
-                & (Past(counter.beat, 2))
-                & (Past(counter.beat))
+                tb.matchesStory(f"Beat stay negated after value has reached {i}")
             ):
-                m.d.sync += [Assert(counter.value == i)]
+                m.d.sync += Assert(counter.value == i)
             with m.If(
-                ~Past(rst)
-                & (Past(counter.value) == i)
-                & (~Past(counter.beat, 2))
-                & (~Past(counter.beat))
+                tb.matchesStory(f"Beat stay asserted after value has reached {i}")
             ):
-                m.d.sync += [Assert(counter.value == i)]
+                m.d.sync += Assert(counter.value == i)
 
     Test.describe(SlowRippleCounter(3), testBody)

@@ -27,7 +27,7 @@ from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past,
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import SlowBeat
-from amaranth_stuff.testing import Test
+from amaranth_stuff.testing import Test, Story
 
 
 from amaranth_boards.resources import *  # from .resources import *
@@ -50,11 +50,35 @@ def test_shouldBeatAtSpecifiedFrequency():
     def testBody(m: Module, cd: ClockDomain):
         rst = cd.rst
         slowbeat = m.submodules.dut
-        # Does not work
-        # with m.If(~Past(rst) & (Past(slowbeat.beat_p))):
-        #    m.d.sync += [Assert(~slowbeat.beat_p)]
-        with m.If(~Past(rst) & (~Past(slowbeat.beat_p))):
-            m.d.sync += [Assert(slowbeat.beat_p)]
+        tb = m.submodules.testBench
+
+        tb.givenStoryBook(
+            participants={"rst": rst, "beat_p": slowbeat.beat_p},
+            stories=[
+                Story("After reset has been negated", {"rst": [1, 0]}),
+                Story(
+                    "After beat_p is up", {"rst": [0, 0], "beat_p": [0, 1]}
+                ),  # requires full sequence for beat_p
+                Story("After beat_p is down", {"rst": [0, 0], "beat_p": [0]}),
+            ],
+        )
+
+        with m.If(tb.matchesStory("After reset has been negated")):
+            m.d.sync += [
+                Assert(slowbeat.beat_p == 0),
+                Assert(slowbeat.beat_n == 1),
+            ]
+        with m.If(tb.matchesStory("After beat_p is up")):
+            m.d.sync += [
+                Assert(slowbeat.beat_p == 0),
+                Assert(slowbeat.beat_n == 1),
+            ]
+        with m.If(tb.matchesStory("After beat_p is down")):
+            m.d.sync += [
+                Assert(slowbeat.beat_p == 1),
+                Assert(slowbeat.beat_n == 0),
+            ]
+
         m.d.sync += [Assert(slowbeat.beat_n == ~slowbeat.beat_p)]
 
     Test.describe(
