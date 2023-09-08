@@ -21,5 +21,12 @@ If not, see <https://www.gnu.org/licenses/>. 
 from .counter import RippleCounter, SlowRippleCounter
 from .decoder import Decoder
 from .slowbeat import SlowBeat
+from .dvitmds import DviTmdsEncoder
 
-__all__ = ["Decoder", "RippleCounter", "SlowBeat", "SlowRippleCounter"]
+__all__ = [
+    "Decoder",
+    "RippleCounter",
+    "SlowBeat",
+    "SlowRippleCounter",
+    "DviTmdsEncoder",
+]
