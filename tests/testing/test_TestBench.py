@@ -161,3 +161,77 @@ def test_testBench_provide_helper_to_test_stories():
             m.d.sync += Assert(counter.out == 1)
 
     Test.perform(DummyCounter(2), testBody)
+
+
+def test_testBench_provide_helper_to_verify_the_content_of_a_logger():
+    class DummySynchronousNotGate(Elaboratable):
+        def __init__(self):
+            self.dataIn = Signal()
+            self.dataOut = Signal()
+
+        def ports(self) -> List[Signal]:
+            return [self.dataIn, self.dataOut]
+
+        def elaborate(self, platform: Platform) -> Module:
+            m = Module()
+            m.d.sync += self.dataOut.eq(~self.dataIn)
+            return m
+
+    def testBody(m: Module, cd: ClockDomain):
+        rst = cd.rst
+        tb = m.submodules.testBench
+        gate = m.submodules.dut
+
+        tb.givenStoryBook(
+            participants={"rst": rst, "din": gate.dataIn, "dout": gate.dataOut},
+            stories=[
+                Story(
+                    "typical",
+                    {
+                        "din": [1, 0, 0, 1, 0, 0, 1, 0]
+                    },  # require the story to start with one to have meaningfull logger values.
+                ),
+            ],
+        )
+
+        logger = tb._loggers["dout"]
+
+        with m.If(tb.matchesStory("typical")):
+            m.d.sync += tb.verifyLogs("dout", [1, 1, 0, 1, 1, 0])
+
+    Test.perform(DummySynchronousNotGate(), testBody)
+
+
+def test_testBench_provide_helper_to_verify_the_content_of_a_logger_and_the_current_value():
+    class DummySynchronousNotGate(Elaboratable):
+        def __init__(self):
+            self.dataIn = Signal()
+            self.dataOut = Signal()
+
+        def ports(self) -> List[Signal]:
+            return [self.dataIn, self.dataOut]
+
+        def elaborate(self, platform: Platform) -> Module:
+            m = Module()
+            m.d.sync += self.dataOut.eq(~self.dataIn)
+            return m
+
+    def testBody(m: Module, cd: ClockDomain):
+        rst = cd.rst
+        tb = m.submodules.testBench
+        gate = m.submodules.dut
+
+        tb.givenStoryBook(
+            participants={"rst": rst, "din": gate.dataIn, "dout": gate.dataOut},
+            stories=[
+                Story(
+                    "typical",
+                    {"din": [1, 0, 0, 1, 0, 0, 1, 0]},
+                ),
+            ],
+        )
+
+        with m.If(tb.matchesStory("typical")):
+            m.d.sync += tb.verifyLogsAndNow("dout", [1, 1, 0, 1, 1, 0, 1])
+
+    Test.perform(DummySynchronousNotGate(), testBody)

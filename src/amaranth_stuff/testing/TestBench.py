@@ -26,6 +26,9 @@ from typing import List  # , Dict, Tuple, Optional
 from amaranth import *
 from amaranth.build import Platform
 
+### amaranth -- test deps
+from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past, Stable, Rose, Fell, Initial
+
 ### local deps
 from .Logger import *
 
@@ -82,15 +85,70 @@ class TestBench(Elaboratable):
         partials = []
         for p in story.content:
             print(f"* Processing '{p}' : {story.content[p]} ...")
-            log = self._loggers[p]
+            logger = self._loggers[p]
             history = list(
                 reversed(story.content[p])
             )  # because logs are sorted from the latest to the oldest
             print(f"* history = {history} ...")
-            partials += [
-                log.logs[i] == history[i] for i in range(0, len(story.content[p]))
-            ]
+            sizeOfLogs = len(logger.logs)
+            sizeOfHistory = len(history)
+            sizeOfPartials = sizeOfLogs if sizeOfLogs < sizeOfHistory else sizeOfHistory
+            partials += [logger.logs[i] == history[i] for i in range(0, sizeOfPartials)]
         result = partials[0]
         for i in range(1, len(partials)):
             result = result & partials[i]
         return result
+
+    def _buildAssertList(self, logger: Logger, history):
+        return [Assert(logger.logs[i] == history[i]) for i in range(0, len(history))]
+
+    def verifyLogs(self, participantName: str, logs: List) -> List:
+        """
+        ```
+        Build a list of statements to verify the content of the named logger.
+
+        ## Args:
+        *    `participantName` (str): the participant name, referenced when calling `givenStoryBook(...)`
+        *    `logs` (List): the list of values, in chronological order, the last element is compared to `logger.logs[0]`
+
+        ## Raises:
+        *    `KeyError`: the participant name is not found.
+
+        ## Returns:
+        A list of statement to assert the content of the logger.
+        ```
+        """
+        if participantName not in self._loggers:
+            raise KeyError(f"Logger '{participantName}' not found")
+        print(f"Verify logs for '{participantName}'...")
+        logger = self._loggers[participantName]
+        history = list(reversed(logs))  # same as matchesStory
+        print(f"* history = {history}")
+        return self._buildAssertList(logger, history)
+
+    def verifyLogsAndNow(self, participantName: str, logs: List) -> List:
+        """
+        ```
+        Build a list of statements to verify the content of the named logger.
+
+        ## Args:
+        *    `participantName` (str): the participant name, referenced when calling `givenStoryBook(...)`
+        *    `logs` (List): the list of values, in chronological order, the last element is compared to `logger.source`, the
+             previous element is compared to `logger.logs[0]`.
+
+        ## Raises:
+        *    `KeyError`: the participant name is not found.
+
+        ## Returns:
+        A list of statement to assert the content of the logger.
+        ```
+        """
+        if participantName not in self._loggers:
+            raise KeyError(f"Logger '{participantName}' not found")
+        print(f"Verify logs and now for '{participantName}'...")
+        logger = self._loggers[participantName]
+        history = list(reversed(logs))  # same as matchesStory
+        print(f"* history = {history}")
+        return [Assert(logger.source == history[0])] + self._buildAssertList(
+            logger, history[1:]
+        )
