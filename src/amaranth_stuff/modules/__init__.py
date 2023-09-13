@@ -22,6 +22,7 @@ from .counter import RippleCounter, SlowRippleCounter
 from .decoder import Decoder
 from .slowbeat import SlowBeat
 from .dvitmds import DviTmdsEncoder
+from .shiftreg import ShiftRegisterSendLsbFirst
 
 __all__ = [
     "Decoder",
@@ -29,4 +30,5 @@ __all__ = [
     "SlowBeat",
     "SlowRippleCounter",
     "DviTmdsEncoder",
+    "ShiftRegisterSendLsbFirst",
 ]
