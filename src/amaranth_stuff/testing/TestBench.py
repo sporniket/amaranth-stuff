@@ -51,6 +51,7 @@ class TestBench(Elaboratable):
     def __init__(self):
         self._ports = []
         self._loggers = {}
+        self.requiredDepth = 0
 
     def ports(self) -> List[Signal]:
         return self._ports
@@ -75,6 +76,7 @@ class TestBench(Elaboratable):
         )
         if maxSize == 0:
             raise ValueError("Stories have no length")
+        self.requiredDepth = maxSize + 3
         self._loggers = {p: Logger(participants[p], maxSize - 1) for p in participants}
 
     def matchesStory(self, storyName):

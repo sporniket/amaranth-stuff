@@ -56,7 +56,7 @@ class Test:
         m = Module()
         m.domains.sync = sync
         m.submodules.dut = dut
-        m.submodules.testBench = TestBench()
+        m.submodules.testBench = testBench = TestBench()
         test(m, sync)
 
         fragment = Fragment.get(m, platform)
@@ -66,6 +66,8 @@ class Test:
         )
         with open(ilName, "wt") as f:
             f.write(output)
+
+        return testBench.requiredDepth
 
     @staticmethod
     def _asSafeName(description: str) -> str:
@@ -132,8 +134,8 @@ class Test:
         sbyName = f"tmp.{baseName}.sby"
 
         print(f"Generating {ilName}...")
-        Test._generateTestBench(ilName, dut, test, platform)
-        Test._generateSbyConfig(sbyName, ilName, depth)
+        requiredDepth = Test._generateTestBench(ilName, dut, test, platform)
+        Test._generateSbyConfig(sbyName, ilName, max([depth, requiredDepth]))
 
         invoke_args = [require_tool("sby"), "-f", sbyName]
         print(f"Running {' '.join(invoke_args)}...")

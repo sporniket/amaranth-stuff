@@ -32,6 +32,7 @@ from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past,
 
 ### amarant-stuff deps
 from amaranth_stuff.testing import Test, Story
+from amaranth_stuff.modules import Sequencer
 
 
 from amaranth_boards.resources import *  # from .resources import *
@@ -78,3 +79,59 @@ def test_shouldFailMiserably():
 
     with pytest.raises(CalledProcessError):
         Test.perform(DummyModule(), testBody)
+
+
+def test_perform_should_fail_flawed_long_test():
+    def testBody(m: Module, cd: ClockDomain):
+        rst = cd.rst
+        sequencer = m.submodules.dut
+        tb = m.submodules.testBench
+
+        tb.givenStoryBook(
+            participants={"rst": rst, "steps": sequencer.steps},
+            stories=[
+                Story(
+                    "when reaching end of step 0",
+                    {
+                        "steps": [
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                        ]
+                    },
+                ),
+                Story(
+                    "when reaching end of step 1",
+                    {"steps": [2, 2, 2]},
+                ),
+                Story(
+                    "when reaching end of step 2",
+                    {"steps": [4, 4, 4, 4]},
+                ),
+                Story(
+                    "when reaching end of step 3",
+                    {"steps": [8]},
+                ),
+            ],
+        )
+
+        with m.If(tb.matchesStory("when reaching end of step 0")):
+            m.d.sync += Assert(sequencer.steps == 4)
+
+    with pytest.raises(CalledProcessError):
+        Test.perform(Sequencer([18, 3, 4, 1]), testBody)
