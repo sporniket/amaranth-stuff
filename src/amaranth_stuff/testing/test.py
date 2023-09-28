@@ -71,7 +71,7 @@ class Test:
 
     @staticmethod
     def _asSafeName(description: str) -> str:
-        safeName = re.sub("[ '\"()\\[\\]]", "-", description)
+        safeName = re.sub("[ '\"()\\[\\]]", "_", description)
         safeName = re.sub("[.]+", " ", safeName)
         safeName = safeName.strip()
         safeName = re.sub("[ ]+", "_", safeName)
@@ -120,21 +120,25 @@ class Test:
             depth (int): The depth of the formal verification to perform
             platform (Platform): the test platform
         """
-        if description is None:
-            currFrame = inspect.currentframe()
-            callFrameStack = inspect.getouterframes(currFrame)
-            description = callFrameStack[1][3]
-            if callFrameStack[1][3] == "__main__":
-                description = test.__name__
+        currFrame = inspect.currentframe()
+        callFrameStack = inspect.getouterframes(currFrame)
+        frameDescription = callFrameStack[1][3]
+        if frameDescription == "__main__":
+            frameDescription = test.__name__
+        baseName = (
+            frameDescription
+            if description is None
+            else f"{frameDescription}__{Test._asSafeName(description)}"
+        )
         print(f"##########>")
-        print(f"##########> {description}")
+        print(f"##########> {baseName}")
         print(f"##########>")
-        baseName = Test._asSafeName(description)
         ilName = f"tmp.{baseName}.il"
         sbyName = f"tmp.{baseName}.sby"
 
         print(f"Generating {ilName}...")
         requiredDepth = Test._generateTestBench(ilName, dut, test, platform)
+        print(f"Generating {sbyName}...")
         Test._generateSbyConfig(sbyName, ilName, max([depth, requiredDepth]))
 
         invoke_args = [require_tool("sby"), "-f", sbyName]

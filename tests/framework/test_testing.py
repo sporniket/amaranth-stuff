@@ -19,6 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
 ### builtin deps
+from os.path import exists
 import pytest
 from subprocess import CalledProcessError
 from typing import List  # , Dict, Tuple, Optional
@@ -55,7 +56,7 @@ class DummyModule(Elaboratable):
         return m
 
 
-def test_shouldFailMiserably():
+def test_perform_shouldFailMiserably():
     def testBody(m: Module, cd: ClockDomain):
         dummy = m.submodules.dut
 
@@ -79,6 +80,42 @@ def test_shouldFailMiserably():
 
     with pytest.raises(CalledProcessError):
         Test.perform(DummyModule(), testBody)
+
+    assert exists("tmp.test_perform_shouldFailMiserably.il")
+    assert exists("tmp.test_perform_shouldFailMiserably.sby")
+
+
+def test_perform_should_combine_test_name_and_provided_description():
+    def testBody(m: Module, cd: ClockDomain):
+        dummy = m.submodules.dut
+
+        tb = m.submodules.testBench
+        tb.givenStoryBook(
+            participants={"rst": cd.rst, "input": dummy.input},
+            stories=[
+                Story("Reset", {"rst": [1]}),
+                Story("Not reset", {"rst": [0], "input": [1]}),
+            ],
+        )
+
+        with m.If(tb.matchesStory("Reset")):
+            m.d.sync += Assert(
+                dummy.complement & dummy.output
+            )  # fails because complement = not(output)
+        with m.If(tb.matchesStory("Not reset")):
+            m.d.sync += Assert(
+                dummy.complement & dummy.output
+            )  # fails because complement = not(output)
+
+    with pytest.raises(CalledProcessError):
+        Test.perform(DummyModule(), testBody, description="foo")
+
+    assert exists(
+        "tmp.test_perform_should_combine_test_name_and_provided_description__foo.il"
+    )
+    assert exists(
+        "tmp.test_perform_should_combine_test_name_and_provided_description__foo.sby"
+    )
 
 
 def test_perform_should_fail_flawed_long_test():
@@ -178,6 +215,6 @@ def test_perform_should_provide_a_correct_reset_signal():
             m.d.sync += Assert(counter.value == 1)  # MUST pass
 
     with pytest.raises(CalledProcessError):
-        Test.perform(RippleCounter(3), verifyStory)
+        Test.perform(RippleCounter(3), verifyStory, description="verify story")
 
-    Test.perform(RippleCounter(3), testBody)
+    Test.perform(RippleCounter(3), testBody, description="verify behaviour")
