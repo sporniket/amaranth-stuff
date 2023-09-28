@@ -32,7 +32,7 @@ from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past,
 
 ### amarant-stuff deps
 from amaranth_stuff.testing import Test, Story
-from amaranth_stuff.modules import Sequencer
+from amaranth_stuff.modules import Sequencer, RippleCounter
 
 
 from amaranth_boards.resources import *  # from .resources import *
@@ -135,3 +135,49 @@ def test_perform_should_fail_flawed_long_test():
 
     with pytest.raises(CalledProcessError):
         Test.perform(Sequencer([18, 3, 4, 1]), testBody)
+
+
+def test_perform_should_provide_a_correct_reset_signal():
+    stories = [
+        Story(
+            "After value has reached 0",
+            {"rst": [0], "value": [0]},
+        ),
+    ]
+
+    def verifyStory(m: Module, cd: ClockDomain):
+        rst = cd.rst
+        counter = m.submodules.dut
+        width = counter.width
+        maxRange = 2**width
+        maxValue = maxRange - 1
+
+        tb = m.submodules.testBench
+        tb.givenStoryBook(
+            participants={"rst": rst, "value": counter.value},
+            stories=stories,
+        )
+
+        with m.If(tb.matchesStory("After value has reached 0")):
+            m.d.sync += Assert(counter.value == 0)  # MUST fail
+
+    def testBody(m: Module, cd: ClockDomain):
+        rst = cd.rst
+        counter = m.submodules.dut
+        width = counter.width
+        maxRange = 2**width
+        maxValue = maxRange - 1
+
+        tb = m.submodules.testBench
+        tb.givenStoryBook(
+            participants={"rst": rst, "value": counter.value},
+            stories=stories,
+        )
+
+        with m.If(tb.matchesStory("After value has reached 0")):
+            m.d.sync += Assert(counter.value == 1)  # MUST pass
+
+    with pytest.raises(CalledProcessError):
+        Test.perform(RippleCounter(3), verifyStory)
+
+    Test.perform(RippleCounter(3), testBody)

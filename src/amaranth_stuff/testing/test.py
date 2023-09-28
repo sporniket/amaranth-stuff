@@ -48,7 +48,7 @@ class Test:
         # to add them to the ports
         # otherwise the verification always pass !!
         sync = ClockDomain("sync")
-        rst = Signal()
+        rst = Signal(reset=1)
         sync.rst = rst
 
         ###
