@@ -23,7 +23,7 @@ gen_dependency_line() {
 # $2 : url of the target repository to query (with or without .git)
 # $3 : target branch of the target repository
 gen_dependency_line_workflow() {
-  echo "        pip install '$1 @ git+$2@$(fetch_last_hash "$2" "refs/heads/$3")',"
+  echo "        pip install '$1 @ git+$2@$(fetch_last_hash "$2" "refs/heads/$3")'"
 }
 
 echo "=== pyproject.toml updates ==="
@@ -33,5 +33,5 @@ gen_dependency_line amaranth-boards https://github.com/amaranth-lang/amaranth-bo
 echo "=== github workflow updates ==="
 gen_dependency_line_workflow amaranth https://github.com/amaranth-lang/amaranth main
 gen_dependency_line_workflow amaranth-boards https://github.com/amaranth-lang/amaranth-boards main
-gen_dependency_line_workflow amaranth-yosys https://github.com/amaranth-lang/amaranth-yosys main
+gen_dependency_line_workflow amaranth-yosys https://github.com/amaranth-lang/amaranth-yosys develop
 
