@@ -5,17 +5,17 @@
 ###     see https://peps.python.org/pep-0518/
 ### see https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
 [build-system]
-requires = ["setuptools>=61", "setuptools-scm>=6.2"]
-build-backend = "setuptools.build_meta"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [project]
 name = "amaranth-stuff-by-sporniket"
-#version = "0.0.1"
+version = "0.0.1"
 description = "A curated collection of code written using the amaranth hdl"
 readme = "README.md"
 requires-python = ">=3.9"
 keywords = ["amaranth","amaranth-hdl","nmigen", "hdl", "fpga"]
-license = {file = "LICENSE"}
+license = {text = "LGPLv3+"}
 authors = [{name="Sporniket", email="sporniket.studio@gmail.com"}]
 classifiers = [
     "Programming Language :: Python :: 3.9",
@@ -26,11 +26,10 @@ classifiers = [
     "Environment :: Console",
 ]
 dependencies = [
-    'amaranth @ git+https://github.com/amaranth-lang/amaranth@f135226a79fddf5caf894030ac7f49995774c3a7',
+    'amaranth @ git+https://github.com/amaranth-lang/amaranth@0c3ada62503359900f185a9b2d8f122b2d952013',
     'amaranth-boards @ git+https://github.com/amaranth-lang/amaranth-boards@91ffa38e788a691464a6873d44537eece72ef76e',
     'importlib-metadata; python_version>"3.8"',
 ]
-dynamic = ["version"]
 
 [project.urls]
 homepage = "https://github.com/sporniket/amaranth-stuff"

@@ -17,6 +17,21 @@ gen_dependency_line() {
   echo "    '$1 @ git+$2@$(fetch_last_hash "$2" "refs/heads/$3")',"
 }
 
+## Generate a dependency line for .github/*.yml
+#
+# $1 : pypi name of the package
+# $2 : url of the target repository to query (with or without .git)
+# $3 : target branch of the target repository
+gen_dependency_line_workflow() {
+  echo "        pip install '$1 @ git+$2@$(fetch_last_hash "$2" "refs/heads/$3")',"
+}
+
+echo "=== pyproject.toml updates ==="
 gen_dependency_line amaranth https://github.com/amaranth-lang/amaranth main
 gen_dependency_line amaranth-boards https://github.com/amaranth-lang/amaranth-boards main
+
+echo "=== github workflow updates ==="
+gen_dependency_line_workflow amaranth https://github.com/amaranth-lang/amaranth main
+gen_dependency_line_workflow amaranth-boards https://github.com/amaranth-lang/amaranth-boards main
+gen_dependency_line_workflow amaranth-yosys https://github.com/amaranth-lang/amaranth-yosys main
 
