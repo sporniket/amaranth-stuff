@@ -37,3 +37,11 @@ homepage = "https://github.com/sporniket/amaranth-stuff"
 #TODO documentation = "https://readthedocs.org"
 repository = "https://github.com/sporniket/amaranth-stuff"
 bug-tracker = "https://github.com/sporniket/amaranth-stuff/issues"
+
+[tool.pdm.scripts]
+reformat = "python3 -m black ."
+
+[tool.pdm.dev-dependencies]
+lint = [
+    "black>=23.9.1",
+]
