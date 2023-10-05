@@ -44,12 +44,16 @@ _clean_tons_of_files = "python3 reclean.py"
 clean = { composite = [ "_clean_tons_of_files" ] }
 # --- linting ---
 reformat = "python3 -m black ."
+# --- building ---
+_build_only = "python3 -m pdm build"
+_install = "python3 install.py"
+make = { composite = ["_build_only","_install"] }
 # --- test & coverage ---
 _coverage_pytest = "python3 -m coverage run --source=amaranth_stuff --branch -m pytest"
 _coverage_report = "python3 -m coverage report -m"
 _coverage_html = "python3 -m coverage html"
 _ci_only = { composite = ["_coverage_pytest","_coverage_report","_coverage_html"] }
-ci = { composite = ["clean", "reformat", "_ci_only"] }
+ci = { composite = ["clean", "reformat", "make", "_ci_only"] }
 
 [tool.pdm.dev-dependencies]
 lint = [
@@ -61,4 +65,8 @@ ci = [
 ]
 scripting = [
     "rich>=13.6.0",
+]
+build = [
+    "pdm>=2.9.3",
+    "pip>=23.2.1",
 ]
