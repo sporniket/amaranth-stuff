@@ -39,9 +39,20 @@ repository = "https://github.com/sporniket/amaranth-stuff"
 bug-tracker = "https://github.com/sporniket/amaranth-stuff/issues"
 
 [tool.pdm.scripts]
+# --- linting ---
 reformat = "python3 -m black ."
+# --- test & coverage ---
+_coverage_pytest = "python3 -m coverage run --source=amaranth_stuff --branch -m pytest"
+_coverage_report = "python3 -m coverage report -m"
+_coverage_html = "python3 -m coverage html"
+_ci_only = { composite = ["_coverage_pytest","_coverage_report","_coverage_html"] }
+ci = { composite = ["reformat", "_ci_only"] }
 
 [tool.pdm.dev-dependencies]
 lint = [
     "black>=23.9.1",
+]
+ci = [
+    "pytest>=7.4.2",
+    "coverage>=7.3.2",
 ]
