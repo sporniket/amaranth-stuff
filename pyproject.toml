@@ -47,7 +47,8 @@ reformat = "python3 -m black ."
 # --- building ---
 _build_only = "python3 -m pdm build"
 _install = "python3 install.py"
-make = { composite = ["_build_only","_install"] }
+make = { composite = ["_build_only"] }
+make_install = { composite = ["_build_only","_install"] }
 # --- test & coverage ---
 _coverage_pytest = "python3 -m coverage run --source=amaranth_stuff --branch -m pytest"
 _coverage_report = "python3 -m coverage report -m"
