@@ -39,6 +39,8 @@ repository = "https://github.com/sporniket/amaranth-stuff"
 bug-tracker = "https://github.com/sporniket/amaranth-stuff/issues"
 
 [tool.pdm.scripts]
+# --- bleeding edge dependencies update ---
+display-dependency-updates = "python3 display-dependency-updates.py"
 # --- cleaning
 _clean_tons_of_files = "python3 reclean.py"
 clean = { composite = [ "_clean_tons_of_files" ] }
