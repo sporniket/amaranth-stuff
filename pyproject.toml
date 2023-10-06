@@ -38,6 +38,10 @@ homepage = "https://github.com/sporniket/amaranth-stuff"
 repository = "https://github.com/sporniket/amaranth-stuff"
 bug-tracker = "https://github.com/sporniket/amaranth-stuff/issues"
 
+[project.optional-dependencies]
+package = [
+    "twine>=4.0.2",
+]
 [tool.pdm.scripts]
 # --- bleeding edge dependencies update ---
 display-dependency-updates = "python3 display-dependency-updates.py"
