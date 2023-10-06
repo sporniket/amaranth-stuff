@@ -21,13 +21,14 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     "Operating System :: OS Independent",
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
 ]
 dependencies = [
-    'amaranth[builtin-yosys] @ git+https://github.com/amaranth-lang/amaranth@0c3ada62503359900f185a9b2d8f122b2d952013',
+    'amaranth[builtin-yosys] @ git+https://github.com/amaranth-lang/amaranth@c7da6c1292ea60a612ee9fd0f75d603485939580',
     'amaranth-boards @ git+https://github.com/amaranth-lang/amaranth-boards@91ffa38e788a691464a6873d44537eece72ef76e',
     'importlib-metadata; python_version>"3.8"',
 ]
