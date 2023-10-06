@@ -47,6 +47,11 @@ _clean_tons_of_files = "python3 reclean.py"
 clean = { composite = [ "_clean_tons_of_files" ] }
 # --- linting ---
 reformat = "python3 -m black ."
+_lint_errors = "python3 -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics"
+_lint_warnings = "python3 -m flake8 . --count --ignore=E266 --exit-zero --max-complexity=10 --max-line-length=127 --statistics"
+lint_report = { composite = [ "_lint_errors", "_lint_warnings" ] }
+lint_ci = { composite = [ "reformat", "_lint_errors" ] }
+lint = { composite = [ "reformat", "lint_report" ] }
 # --- building ---
 _build_only = "python3 -m pdm build"
 _install = "python3 install.py"
@@ -57,11 +62,12 @@ _coverage_pytest = "python3 -m coverage run --source=amaranth_stuff --branch -m 
 _coverage_report = "python3 -m coverage report -m"
 _coverage_html = "python3 -m coverage html"
 _ci_only = { composite = ["_coverage_pytest","_coverage_report","_coverage_html"] }
-ci = { composite = ["clean", "reformat", "_ci_only"] }
+ci = { composite = ["clean", "lint_ci", "_ci_only"] }
 
 [tool.pdm.dev-dependencies]
 lint = [
     "black>=23.9.1",
+    "flake8>=6.1.0",
 ]
 ci = [
     "pytest>=7.4.2",
