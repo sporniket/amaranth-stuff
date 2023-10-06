@@ -100,6 +100,7 @@ def test_DviTmdsEncoder_shouldEncodeDataCorrectly():
                 Signal(name="ctl1"),
             ),
             testFactory(testData[0], testData[1], testData[2], testData[3]),
+            description=f"{testData[0]}.{testData[1]}.{testData[2]}.{testData[3]}",
         )
 
 

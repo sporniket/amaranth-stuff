@@ -24,6 +24,8 @@ import os
 import re
 import subprocess
 import sys
+import shutil
+from pathlib import Path
 
 ### amaranth -- main deps
 from amaranth import *
@@ -75,12 +77,11 @@ class Test:
         safeName = re.sub("[.]+", " ", safeName)
         safeName = safeName.strip()
         safeName = re.sub("[ ]+", "_", safeName)
-        safeName = re.sub("[-]*[_][-_]*", "_", safeName)
+        safeName = re.sub("[-]", "_", safeName)
         return safeName
 
     @staticmethod
     def _generateSbyConfig(sbyName: str, ilName: str, depth: int):
-        print(f"Generating {sbyName}...")
         with open(sbyName, "wt") as f:
             f.write(
                 "\n".join(
@@ -120,6 +121,7 @@ class Test:
             depth (int): The depth of the formal verification to perform
             platform (Platform): the test platform
         """
+        Path("build-tests").mkdir(parents=True, exist_ok=True)
         currFrame = inspect.currentframe()
         callFrameStack = inspect.getouterframes(currFrame)
         frameDescription = callFrameStack[1][3]
@@ -133,8 +135,8 @@ class Test:
         print(f"##########>")
         print(f"##########> {baseName}")
         print(f"##########>")
-        ilName = f"tmp.{baseName}.il"
-        sbyName = f"tmp.{baseName}.sby"
+        ilName = f"{baseName}.il"
+        sbyName = f"{baseName}.sby"
 
         print(f"Generating {ilName}...")
         requiredDepth = Test._generateTestBench(ilName, dut, test, platform)
@@ -143,4 +145,11 @@ class Test:
 
         invoke_args = [require_tool("sby"), "-f", sbyName]
         print(f"Running {' '.join(invoke_args)}...")
-        subprocess.run(invoke_args).check_returncode()
+        runResult = subprocess.run(invoke_args)
+
+        # Cannot work in subfolder directly, so move the resulting files afterwards.
+        shutil.move(baseName, "build-tests")
+        shutil.move(ilName, "build-tests")
+        shutil.move(sbyName, "build-tests")
+
+        runResult.check_returncode()

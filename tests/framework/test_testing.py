@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. 
 """
 ### builtin deps
 from os.path import exists
+from pathlib import Path
 import pytest
 from subprocess import CalledProcessError
 from typing import List  # , Dict, Tuple, Optional
@@ -81,8 +82,8 @@ def test_perform_shouldFailMiserably():
     with pytest.raises(CalledProcessError):
         Test.perform(DummyModule(), testBody)
 
-    assert exists("tmp.test_perform_shouldFailMiserably.il")
-    assert exists("tmp.test_perform_shouldFailMiserably.sby")
+    assert exists(Path("build-tests/test_perform_shouldFailMiserably.il"))
+    assert exists(Path("build-tests/test_perform_shouldFailMiserably.sby"))
 
 
 def test_perform_should_combine_test_name_and_provided_description():
@@ -111,10 +112,14 @@ def test_perform_should_combine_test_name_and_provided_description():
         Test.perform(DummyModule(), testBody, description="foo")
 
     assert exists(
-        "tmp.test_perform_should_combine_test_name_and_provided_description__foo.il"
+        Path(
+            "build-tests/test_perform_should_combine_test_name_and_provided_description__foo.il"
+        )
     )
     assert exists(
-        "tmp.test_perform_should_combine_test_name_and_provided_description__foo.sby"
+        Path(
+            "build-tests/test_perform_should_combine_test_name_and_provided_description__foo.sby"
+        )
     )
 
 

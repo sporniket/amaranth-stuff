@@ -1,6 +1,7 @@
 # tmp/local stuff
 tmp
 tmp.*
+build-tests/
 
 # pdm stuff
 .pdm-python

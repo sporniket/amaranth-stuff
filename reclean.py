@@ -3,7 +3,7 @@ import os
 import shutil
 from rich import print
 
-for pattern in ["tmp.test_*", "dist/*"]:
+for pattern in ["tmp.test_*", "build-tests/*", "dist/*", "test_*"]:
     print(f"   [yellow]Cleaning[/yellow] {pattern}...")
     for path in glob(pattern, recursive=0):
         print(f"   :wastebasket: [bright_black]{path}[/bright_black]")
