@@ -54,7 +54,7 @@ _coverage_pytest = "python3 -m coverage run --source=amaranth_stuff --branch -m 
 _coverage_report = "python3 -m coverage report -m"
 _coverage_html = "python3 -m coverage html"
 _ci_only = { composite = ["_coverage_pytest","_coverage_report","_coverage_html"] }
-ci = { composite = ["clean", "reformat", "make", "_ci_only"] }
+ci = { composite = ["clean", "reformat", "_ci_only"] }
 
 [tool.pdm.dev-dependencies]
 lint = [
