@@ -27,12 +27,8 @@ jobs:
         sudo add-apt-repository 'deb http://ppa.launchpad.net/sri-csl/formal-methods/ubuntu bionic main'
         sudo apt-get update
         sudo apt-get install yices2
-        python -m pip install --upgrade pip
-        python -m pip install flake8 pytest 
-        pip install 'yowasp-yosys==0.20.dev398' # latest version that works on Python 3.7
-        pip install 'amaranth @ git+https://github.com/amaranth-lang/amaranth@0c3ada62503359900f185a9b2d8f122b2d952013'
-        pip install 'amaranth-boards @ git+https://github.com/amaranth-lang/amaranth-boards@91ffa38e788a691464a6873d44537eece72ef76e'
-        pip install 'amaranth-yosys @ git+https://github.com/amaranth-lang/amaranth-yosys@61e1807df7725ae203144ae0f5e1c4ba42d72085'
+        python -m pip install --upgrade pip pdm
+        python -m pdm sync
     - name: Preserve Wasm cache
       uses: actions/cache@v1
       with:
@@ -40,13 +36,6 @@ jobs:
           ~/.cache/wasmtime
           ~/.cache/yowasp
         key: ${{ runner.os }}-wasm
-    - name: Lint with flake8
+    - name: Run project CI
       run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        export AMARANTH_USE_YOSYS=builtin YOSYS=yowasp-yosys SBY=yowasp-sby SMTBMC=yowasp-yosys-smtbmc
-        PYTHONPATH="$(pwd)/src" pytest
+        python -m pdm run ci
