@@ -66,7 +66,7 @@ A build tool like [pdm](https://pdm.fming.dev) can be used to manage dependencie
 
 	git clone https://github.com/sporniket/amaranth-stuff.git
 	cd amaranth-stuff
-    python3 -m pdm update
+    python3 -m pdm sync
     python3 -m pdm ci
 
 ## 4. Known issues
