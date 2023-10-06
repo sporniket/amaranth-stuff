@@ -27,7 +27,7 @@ classifiers = [
     "Environment :: Console",
 ]
 dependencies = [
-    'amaranth @ git+https://github.com/amaranth-lang/amaranth@0c3ada62503359900f185a9b2d8f122b2d952013',
+    'amaranth[builtin-yosys] @ git+https://github.com/amaranth-lang/amaranth@0c3ada62503359900f185a9b2d8f122b2d952013',
     'amaranth-boards @ git+https://github.com/amaranth-lang/amaranth-boards@91ffa38e788a691464a6873d44537eece72ef76e',
     'importlib-metadata; python_version>"3.8"',
 ]
@@ -38,11 +38,8 @@ homepage = "https://github.com/sporniket/amaranth-stuff"
 repository = "https://github.com/sporniket/amaranth-stuff"
 bug-tracker = "https://github.com/sporniket/amaranth-stuff/issues"
 
-[project.optional-dependencies]
-package = [
-    "twine>=4.0.2",
-]
 [tool.pdm.scripts]
+_.env_file = ".env.toolchain"
 # --- bleeding edge dependencies update ---
 display-dependency-updates = "python3 display-dependency-updates.py"
 # --- cleaning
@@ -69,6 +66,7 @@ lint = [
 ci = [
     "pytest>=7.4.2",
     "coverage>=7.3.2",
+    "yowasp-yosys>=0.34.0.0.post591",
 ]
 scripting = [
     "rich>=13.6.0",
@@ -76,4 +74,5 @@ scripting = [
 build = [
     "pdm>=2.9.3",
     "pip>=23.2.1",
+    "twine>=4.0.2",
 ]
