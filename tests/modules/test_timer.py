@@ -27,10 +27,10 @@ from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past,
 
 ### amarant-stuff deps
 from amaranth_stuff.testing import Test, Story
-from amaranth_stuff.modules import DelayTimer
+from amaranth_stuff.modules import DelayTimer8Bits
 
 
-def test_DelayTimer_should_use_default_values_as_expected():
+def test_DelayTimer8Bits_should_use_default_values_as_expected():
     stories = [
         Story(
             "for 5 cycle after reset",
@@ -52,13 +52,13 @@ def test_DelayTimer_should_use_default_values_as_expected():
             participants={
                 "rst": rst,
                 "enable": timer.enable,
-                "prescalerStrobe": timer.prescalerStrobe,
-                "counterStrobe": timer.counterStrobe,
+                "prescalerStrobe": timer.dataRegisterWrite.prescalerStrobe,
+                "counterStrobe": timer.dataRegisterWrite.counterStrobe,
             },
             stories=stories,
         )
 
         with m.If(tb.matchesStory("for 5 cycle after reset")):
-            Assert(rst == 1)
+            m.d.sync += Assert(rst == 1)  # MUST fail
 
-    Test.perform(DelayTimer(1, 2, enable=1), testStory)
+    Test.perform(DelayTimer8Bits(1, 2, enable=1), testStory)

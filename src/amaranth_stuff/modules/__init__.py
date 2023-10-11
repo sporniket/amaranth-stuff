@@ -24,9 +24,11 @@ from .slowbeat import SlowBeat
 from .dvitmds import DviTmdsEncoder
 from .sequencer import Sequencer
 from .shiftreg import ShiftRegisterSendLsbFirst
+from .timer import DelayTimer8Bits
 
 __all__ = [
     "Decoder",
+    "DelayTimer8Bits",
     "DviTmdsEncoder",
     "RippleCounter",
     "Sequencer",
