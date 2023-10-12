@@ -18,6 +18,9 @@ You should have received a copy of the GNU Lesser General Public License along w
 If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
+from subprocess import CalledProcessError
+import pytest
+
 ### amaranth -- main deps
 from amaranth import *
 from amaranth.build import Platform
@@ -61,4 +64,34 @@ def test_DelayTimer8Bits_should_use_default_values_as_expected():
         with m.If(tb.matchesStory("for 5 cycle after reset")):
             m.d.sync += Assert(rst == 1)  # MUST fail
 
-    Test.perform(DelayTimer8Bits(1, 2, enable=1), testStory)
+    def testBehaviour(m: Module, cd: ClockDomain):
+        rst = cd.rst
+        tb = m.submodules.testBench
+        timer = m.submodules.dut
+
+        tb.givenStoryBook(
+            participants={
+                "rst": rst,
+                "enable": timer.enable,
+                "prescalerStrobe": timer.dataRegisterWrite.prescalerStrobe,
+                "counterStrobe": timer.dataRegisterWrite.counterStrobe,
+                "counter": timer.timerOutput.counter,
+                "timeout": timer.timerOutput.timeout,
+                "beat": timer.timerOutput.beat,
+            },
+            stories=stories,
+        )
+
+        with m.If(tb.matchesStory("for 5 cycle after reset")):
+            m.d.sync += tb.verifyLogs("counter", [2, 1, 0, 2, 1, 0])
+            m.d.sync += tb.verifyLogs("timeout", [0, 0, 1, 0, 0, 1])
+            m.d.sync += tb.verifyLogsAndNow("beat", [0, 0, 0, 1, 1, 1, 0])
+
+    with pytest.raises(CalledProcessError):
+        Test.perform(
+            DelayTimer8Bits(1, 2, enable=1), testStory, description="verify story"
+        )
+
+    Test.perform(
+        DelayTimer8Bits(1, 2, enable=1), testBehaviour, description="verify behaviour"
+    )

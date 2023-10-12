@@ -83,4 +83,49 @@ class DelayTimer8Bits(Component):
     def elaborate(self, platform: Platform) -> Module:
         m = Module()
 
+        prescalerNext = Signal(_prescaler.shape, reset=1)  # force loading after reset
+        prescalerActual = Signal.like(prescalerNext)
+        counterNext = Signal(_counter.shape, reset=1)  # force loading after reset
+        counterActual = self.timerOutput.counter
+
+        # Combinatorial settings
+        # -- prepare next timeout
+        timeoutNext = Signal()
+        m.d.comb += timeoutNext.eq(counterNext == 0)
+
+        # -- prepare next prescaler
+        with m.If(prescalerActual >= 1):
+            m.d.comb += prescalerNext.eq(prescalerActual - 1)
+        with m.Else():
+            m.d.comb += prescalerNext.eq(self._prescaler)
+
+        # -- prepare next counter
+        with m.If(counterActual >= 1):
+            m.d.comb += counterNext.eq(counterActual - 1)
+        with m.Else():
+            m.d.comb += counterNext.eq(self._counter)
+
+        # Synchronous logic
+
+        with m.If(enable):
+            with m.If(prescalerActual == 0):
+                # time to decrement the counter
+                with m.If(counterNext == 0):
+                    # time to toggle the timer beat
+                    m.d.sync += self.timerOutput.beat.eq(~self.timerOutput.beat.eq)
+                m.d.sync += [
+                    counterActual.eq(counterNext),
+                ]
+            m.d.sync += [
+                self.timerOutput.timeout.eq(timeoutNext),
+                prescalerActual.eq(prescalerNext),
+            ]
+        with m.Else():
+            m.d.sync += [
+                prescalerActual.eq(self._prescaler),
+                self.timerOutput.timeout.eq(
+                    0
+                ),  # force deassertion of the timeout pulse
+            ]
+
         return m
