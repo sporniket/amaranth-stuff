@@ -83,9 +83,13 @@ class DelayTimer8Bits(Component):
     def elaborate(self, platform: Platform) -> Module:
         m = Module()
 
-        prescalerNext = Signal(_prescaler.shape, reset=1)  # force loading after reset
+        prescalerNext = Signal(
+            self._prescaler.shape(), reset=1
+        )  # force loading after reset
         prescalerActual = Signal.like(prescalerNext)
-        counterNext = Signal(_counter.shape, reset=1)  # force loading after reset
+        counterNext = Signal(
+            self._counter.shape(), reset=1
+        )  # force loading after reset
         counterActual = self.timerOutput.counter
 
         # Combinatorial settings
@@ -107,12 +111,12 @@ class DelayTimer8Bits(Component):
 
         # Synchronous logic
 
-        with m.If(enable):
+        with m.If(self.enable):
             with m.If(prescalerActual == 0):
                 # time to decrement the counter
                 with m.If(counterNext == 0):
                     # time to toggle the timer beat
-                    m.d.sync += self.timerOutput.beat.eq(~self.timerOutput.beat.eq)
+                    m.d.sync += self.timerOutput.beat.eq(~self.timerOutput.beat)
                 m.d.sync += [
                     counterActual.eq(counterNext),
                 ]
