@@ -65,9 +65,11 @@ class DelayTimer8Bits(Component):
         self._counter = Signal(
             8, reset=1 if counter < 1 else 255 if counter > 255 else counter
         )
+
+        # override reset values of signals created through the interface
         if enable > 0:
-            # override enable reset value
             self.enable.reset = Const.cast(1).value  # taken from Signal(...) code
+        self.timerOutput.counter.reset = Const.cast(1).value
 
     def ports(self) -> List[Signal]:
         return [
@@ -93,18 +95,15 @@ class DelayTimer8Bits(Component):
         counterActual = self.timerOutput.counter
 
         # Combinatorial settings
-        # -- prepare next timeout
-        timeoutNext = Signal()
-        m.d.comb += timeoutNext.eq(counterNext == 0)
 
         # -- prepare next prescaler
-        with m.If(prescalerActual >= 1):
+        with m.If(prescalerActual > 1):
             m.d.comb += prescalerNext.eq(prescalerActual - 1)
         with m.Else():
             m.d.comb += prescalerNext.eq(self._prescaler)
 
         # -- prepare next counter
-        with m.If(counterActual >= 1):
+        with m.If(counterActual > 1):
             m.d.comb += counterNext.eq(counterActual - 1)
         with m.Else():
             m.d.comb += counterNext.eq(self._counter)
@@ -112,16 +111,19 @@ class DelayTimer8Bits(Component):
         # Synchronous logic
 
         with m.If(self.enable):
-            with m.If(prescalerActual == 0):
+            with m.If(prescalerActual == 1):
                 # time to decrement the counter
-                with m.If(counterNext == 0):
-                    # time to toggle the timer beat
-                    m.d.sync += self.timerOutput.beat.eq(~self.timerOutput.beat)
+                with m.If(counterActual == 1):
+                    m.d.sync += [
+                        self.timerOutput.beat.eq(~self.timerOutput.beat),
+                        self.timerOutput.timeout.eq(1),
+                    ]
+                with m.Else():
+                    m.d.sync += self.timerOutput.timeout.eq(0)
                 m.d.sync += [
                     counterActual.eq(counterNext),
                 ]
             m.d.sync += [
-                self.timerOutput.timeout.eq(timeoutNext),
                 prescalerActual.eq(prescalerNext),
             ]
         with m.Else():
