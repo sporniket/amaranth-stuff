@@ -69,7 +69,7 @@ class DelayTimer8Bits(Component):
         # override reset values of signals created through the interface
         if enable > 0:
             self.enable.reset = Const.cast(1).value  # taken from Signal(...) code
-        self.timerOutput.counter.reset = Const.cast(1).value
+        self.timerOutput.counter.reset = Const.cast(self._counter.reset).value
 
     def ports(self) -> List[Signal]:
         return [
@@ -85,13 +85,9 @@ class DelayTimer8Bits(Component):
     def elaborate(self, platform: Platform) -> Module:
         m = Module()
 
-        prescalerNext = Signal(
-            self._prescaler.shape(), reset=1
-        )  # force loading after reset
+        prescalerNext = Signal.like(self._prescaler)  # force loading after reset
         prescalerActual = Signal.like(prescalerNext)
-        counterNext = Signal(
-            self._counter.shape(), reset=1
-        )  # force loading after reset
+        counterNext = Signal.like(self._counter)  # force loading after reset
         counterActual = self.timerOutput.counter
 
         # Combinatorial settings
