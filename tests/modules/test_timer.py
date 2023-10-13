@@ -36,12 +36,12 @@ from amaranth_stuff.modules import DelayTimer8Bits
 def test_DelayTimer8Bits_should_use_default_values_as_expected():
     stories = [
         Story(
-            "for 6 cycles after reset",
+            "for 8 cycles after reset",
             {
-                "rst": [1, 0, 0, 0, 0, 0, 0],
-                "enable": [1, 1, 1, 1, 1, 1],
-                "prescalerStrobe": [0, 0, 0, 0, 0, 0],
-                "counterStrobe": [0, 0, 0, 0, 0, 0],
+                "rst": [1, 0, 0, 0, 0, 0, 0, 0, 0],
+                "enable": [1, 1, 1, 1, 1, 1, 1, 1],
+                "prescalerStrobe": [0, 0, 0, 0, 0, 0, 0, 0],
+                "counterStrobe": [0, 0, 0, 0, 0, 0, 0, 0],
             },
         )
     ]
@@ -61,7 +61,7 @@ def test_DelayTimer8Bits_should_use_default_values_as_expected():
             stories=stories,
         )
 
-        with m.If(tb.matchesStory("for 6 cycles after reset")):
+        with m.If(tb.matchesStory("for 8 cycles after reset")):
             m.d.sync += Assert(rst == 1)  # MUST fail
 
     def testBehaviour(m: Module, cd: ClockDomain):
@@ -82,10 +82,10 @@ def test_DelayTimer8Bits_should_use_default_values_as_expected():
             stories=stories,
         )
 
-        with m.If(tb.matchesStory("for 6 cycles after reset")):
-            m.d.sync += tb.verifyLogs("counter", [2, 1, 2, 1, 2, 1])
-            m.d.sync += tb.verifyLogs("timeout", [0, 0, 1, 0, 1, 0])
-            m.d.sync += tb.verifyLogs("beat", [0, 0, 1, 1, 0, 0])
+        with m.If(tb.matchesStory("for 8 cycles after reset")):
+            m.d.sync += tb.verifyLogs("counter", [2, 1, 2, 1, 2, 1, 2, 1])
+            m.d.sync += tb.verifyLogs("timeout", [0, 0, 1, 0, 1, 0, 1, 0])
+            m.d.sync += tb.verifyLogs("beat", [0, 0, 1, 1, 0, 0, 1, 1])
 
     with pytest.raises(CalledProcessError):
         Test.perform(
