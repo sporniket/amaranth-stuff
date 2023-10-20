@@ -27,10 +27,35 @@ from amaranth.lib.wiring import *
 from amaranth.build import Platform
 
 
+class SignatureOfDataBusBidirectionnal(Signature):
+    def __init__(self, width: int):
+        super.__init__(
+            {
+                "in": In(width),
+                "out": Out(width),
+            }
+        )
+
+
+class SignatureOfDelayTimerControlStatusRegister(Signature):
+    def __init__(self):
+        super.__init__(
+            {
+                "prescalerStrobe": In(1),
+                "counterStrobe": In(1),
+                "enable": In(1),
+                "timeout": Out(1),
+                "beat": Out(1),
+            }
+        )
+
+
 class SignatureOfDelayTimer(Signature):
     def __init__(self, counterWidth: int = 8):
         super().__init__(
             {
+                "data": Out(SignatureOfDataBusBidirectionnal(8)),
+                "control": Out(SignatureOfDelayTimerControlStatusRegister()),
                 "dataRegisterWrite": In(
                     Signature(
                         {
@@ -55,9 +80,19 @@ class SignatureOfDelayTimer(Signature):
 
 
 class DelayTimer8Bits(Component):
-    signature = SignatureOfDelayTimer().freeze()
+    @property
+    def signature(self):
+        return SignatureOfDelayTimer(self._dataWidth)
 
-    def __init__(self, prescaler: int = 1, counter: int = 1, *, enable: int = 0):
+    def __init__(
+        self,
+        prescaler: int = 1,
+        counter: int = 1,
+        *,
+        enable: int = 0,
+        dataWidth: int = 8,
+    ):
+        self._dataWidth = dataWidth
         super().__init__()
         self._prescaler = Signal(
             8, reset=1 if prescaler < 1 else 255 if prescaler > 255 else prescaler
