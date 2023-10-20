@@ -64,6 +64,8 @@ _coverage_report = "python3 -m coverage report -m"
 _coverage_html = "python3 -m coverage html"
 _ci_only = { composite = ["_coverage_pytest","_coverage_report","_coverage_html"] }
 ci = { composite = ["clean", "lint_ci", "_ci_only"] }
+_pytest = "python3 -m pytest"
+test = { composite = ["clean", "reformat", "pytest"] }
 
 [tool.pdm.dev-dependencies]
 lint = [
