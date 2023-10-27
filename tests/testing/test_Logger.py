@@ -22,14 +22,14 @@ import pytest
 from subprocess import CalledProcessError
 
 ### amaranth -- main deps
-from amaranth import *
+from amaranth import ClockDomain, Module, Signal, signed
 from amaranth.hdl.ir import UnusedElaboratable
 
 ### amaranth -- test deps
-from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past, Stable, Rose, Fell, Initial
+from amaranth.asserts import Assert
 
 ### amarant-stuff deps
-from amaranth_stuff.testing.Logger import *
+from amaranth_stuff.testing.Logger import Logger
 from amaranth_stuff.testing import Test
 
 

@@ -28,16 +28,15 @@ import shutil
 from pathlib import Path
 
 ### amaranth -- main deps
-from amaranth import *
+from amaranth import ClockDomain, Elaboratable, Fragment, Module, Signal
 from amaranth.build import Platform
 
 ### amaranth -- testing
-from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past, Stable, Rose, Fell, Initial
 from amaranth.back import rtlil  # , cxxrtl, verilog
 from amaranth._toolchain import require_tool  # May need to be re-implemented locally
 
 ### internal
-from .TestBench import *
+from .TestBench import TestBench
 
 
 class Test:

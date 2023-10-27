@@ -26,18 +26,18 @@ from subprocess import CalledProcessError
 from typing import List  # , Dict, Tuple, Optional
 
 ### amaranth -- main deps
-from amaranth import *
+from amaranth import ClockDomain, Elaboratable, Module, Signal
 from amaranth.build import Platform
 
 ### amaranth -- test deps
-from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past, Stable, Rose, Fell, Initial
+from amaranth.asserts import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.testing import Test, Story
 from amaranth_stuff.modules import Sequencer, RippleCounter
 
 
-from amaranth_boards.resources import *  # from .resources import *
+# from .resources import *
 from amaranth.build import Resource, Clock, Pins
 
 

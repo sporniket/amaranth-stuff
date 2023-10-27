@@ -19,10 +19,10 @@ If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
 ### amaranth -- main deps
-from amaranth import *
+from amaranth import ClockDomain, Module, Signal
 
 ### amaranth -- test deps
-from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past, Stable, Rose, Fell, Initial
+from amaranth.asserts import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import DviTmdsEncoder

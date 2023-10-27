@@ -20,15 +20,17 @@ If not, see <https://www.gnu.org/licenses/>. 
 """
 import pytest
 from subprocess import CalledProcessError
+from typing import List
 
 ### amaranth -- main deps
-from amaranth import *
+from amaranth import ClockDomain, Elaboratable, Module, Signal
+from amaranth.build import Platform
 
 ### amaranth -- test deps
-from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past, Stable, Rose, Fell, Initial
+from amaranth.asserts import Assert
 
 ### amarant-stuff deps
-from amaranth_stuff.testing.TestBench import *
+from amaranth_stuff.testing.TestBench import Story, TestBench
 from amaranth_stuff.testing import Test
 
 

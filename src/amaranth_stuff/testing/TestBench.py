@@ -23,14 +23,14 @@ If not, see <https://www.gnu.org/licenses/>. 
 from typing import List  # , Dict, Tuple, Optional
 
 ### amaranth -- main deps
-from amaranth import *
+from amaranth import Elaboratable, Module, Signal
 from amaranth.build import Platform
 
 ### amaranth -- test deps
-from amaranth.asserts import *  # AnyConst, AnySeq, Assert, Assume, Cover, Past, Stable, Rose, Fell, Initial
+from amaranth.asserts import Assert
 
 ### local deps
-from .Logger import *
+from .Logger import Logger
 
 
 class Story:
