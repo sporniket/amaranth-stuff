@@ -6,15 +6,15 @@ groups = ["default", "dev", "lint", "test", "scripting", "build", "ci", "package
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:7f20f199ecac7e69e5c0fd903752b6fe3e735d7c8816faa559c7a8fd6840f843"
+content_hash = "sha256:68acf779499245f52d146fdfb21381781529531f55b4e3826b85f2ab3d8b6195"
 
 [[package]]
 name = "amaranth"
-version = "0.4.0"
+version = "0.4.1"
 requires_python = "~=3.8"
 git = "https://github.com/amaranth-lang/amaranth"
-ref = "v0.4.0"
-revision = "a2f3c544eef8d55f29f115663eb33a467cc01178"
+ref = "v0.4.1"
+revision = "4c1d0f3889d27e4f3d82f4d22d45f757b5e1bf54"
 summary = "Amaranth hardware definition language"
 dependencies = [
     "Jinja2~=3.0",
@@ -46,15 +46,15 @@ files = [
 
 [[package]]
 name = "amaranth"
-version = "0.4.0"
+version = "0.4.1"
 extras = ["builtin-yosys"]
 requires_python = "~=3.8"
 git = "https://github.com/amaranth-lang/amaranth"
-ref = "v0.4.0"
-revision = "a2f3c544eef8d55f29f115663eb33a467cc01178"
+ref = "v0.4.1"
+revision = "4c1d0f3889d27e4f3d82f4d22d45f757b5e1bf54"
 summary = "Amaranth hardware definition language"
 dependencies = [
-    "amaranth @ git+https://github.com/amaranth-lang/amaranth@v0.4.0",
+    "amaranth @ git+https://github.com/amaranth-lang/amaranth@v0.4.1",
     "amaranth-yosys>=0.35",
 ]
 
