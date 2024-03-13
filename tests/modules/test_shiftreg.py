@@ -18,6 +18,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
+
 ### amaranth -- main deps
 from amaranth import ClockDomain, Module, Signal, unsigned
 
