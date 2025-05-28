@@ -46,6 +46,8 @@ Content
   * [amaranth](https://github.com/amaranth-lang/amaranth).
   * [amaranth-boards](https://github.com/amaranth-lang/amaranth-boards).
 
+* Formal verification testing requires [Yices2](https://yices.csl.sri.com/).
+
 > Do not use **Amaranth stuff by Sporniket** if this project is not suitable for your project
 
 ## 3. How to use **Amaranth stuff by Sporniket** ?
