@@ -40,9 +40,27 @@ class Story:
     not the same, the longest sequences are starting before to end simultaneously.
     """
 
-    def __init__(self, title, content):
+    def __init__(self, title: str, content, *, given=None):
+        """Fully define a story
+
+        * title : string, a distinctive title
+        * content : a list of values by _participant_ name, e.g. {"a":[1,0,1], "b":[0,1,1]}
+        * given : OPTIONNAL, the list of participants whose content is _given_ ; content of other participants are _expected_ ;
+            when not specified, all participants are considered given.
+        """
         self.title = title
         self.content = content
+        if given is not None:
+            self.given = []
+            for p in given:
+                if p in content:
+                    self.given.append(p)
+        else:
+            self.given = [p for p in content]
+        self.expected = []
+        for p in content:
+            if p not in self.given:
+                self.expected.append(p)
 
 
 class TestBench(Elaboratable):
@@ -85,7 +103,7 @@ class TestBench(Elaboratable):
         print(f"Building story matcher for '{storyName}'...")
         story = self._stories[storyName]
         partials = []
-        for p in story.content:
+        for p in story.given:
             print(f"* Processing '{p}' : {story.content[p]} ...")
             logger = self._loggers[p]
             history = list(
@@ -154,3 +172,7 @@ class TestBench(Elaboratable):
         return [Assert(logger.source == history[0])] + self._buildAssertList(
             logger, history[1:]
         )
+
+    def fail(self, participantName: str) -> List:
+        logger = self._loggers[participantName]
+        return [Assert(logger.source != logger.source)]

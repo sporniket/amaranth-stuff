@@ -20,7 +20,21 @@ If not, see <https://www.gnu.org/licenses/>. 
 """
 
 from .TestRunner import TestRunner
-from .TestBench import Story
-from .TestSuiteRunner import TestSuiteRunner
 
-__all__ = ["TestRunner", "Story", "TestSuiteRunner"]
+
+class TestSuiteRunner:
+    __test__ = False  # so that pytest does NOT try to collect it
+
+    """A system to generate a suite of test benches to be formally verified by SymbiYosis (sby)"""
+
+    def __init__(self, deviceFactory, castingFactory, stories):
+        for i, story in enumerate(stories):
+            if len(story.expected) == 0:
+                raise ValueError(f"story.must.have.expected.participants:{i}")
+        self._suite = [
+            TestRunner(deviceFactory, castingFactory, story) for story in stories
+        ]
+
+    def run(self):
+        for test in self._suite:
+            test.run()

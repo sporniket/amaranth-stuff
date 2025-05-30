@@ -27,7 +27,7 @@ from amaranth.asserts import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import ShiftRegisterSendLsbFirst
-from amaranth_stuff.testing import Test, Story
+from amaranth_stuff.testing import TestRunner, Story
 
 
 def test_ShiftRegisterSendLsbFirst_should_serialize_data_in():
@@ -61,7 +61,7 @@ def test_ShiftRegisterSendLsbFirst_should_serialize_data_in():
                 tb.verifyLogs("doutinv", [0, 0, 1, 0, 1]),
             ]
 
-    Test.perform(
+    TestRunner.perform(
         ShiftRegisterSendLsbFirst(Signal(unsigned(4), name="dataIn")), testBody
     )
 
@@ -94,6 +94,6 @@ def test_ShiftRegisterSendLsbFirst_should_delay_load_by_phase():
                 tb.verifyLogs("load", [0, 0, 1, 0, 0, 0, 1, 0, 0]),
             ]
 
-    Test.perform(
+    TestRunner.perform(
         ShiftRegisterSendLsbFirst(Signal(unsigned(4), name="dataIn"), 6), testBody
     )

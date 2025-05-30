@@ -27,7 +27,7 @@ from amaranth.asserts import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import Decoder
-from amaranth_stuff.testing import Test, Story
+from amaranth_stuff.testing import TestRunner, Story
 
 
 def test_shouldAssertTheCorrectBitWhenInputIsInRange():
@@ -51,7 +51,7 @@ def test_shouldAssertTheCorrectBitWhenInputIsInRange():
                     Assert(~(decoder.outOfRange)),
                 ]
 
-    Test.perform(
+    TestRunner.perform(
         Decoder(
             (1 << 2) - 1
         ),  # there is 1 invalid input for testing the error signal of decoder
@@ -75,7 +75,7 @@ def test_shouldAssertTheErrorBitWhenInputIsOutOfRange():
         with m.If(tb.matchesStory("When input is out of range")):
             m.d.sync += [Assert(decoder.output == 0), Assert(decoder.outOfRange)]
 
-    Test.perform(
+    TestRunner.perform(
         Decoder(
             (1 << 2) - 1
         ),  # there is 1 invalid input for testing the error signal of decoder

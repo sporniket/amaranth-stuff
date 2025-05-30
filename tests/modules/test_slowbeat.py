@@ -28,7 +28,7 @@ from amaranth.asserts import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import SlowBeat
-from amaranth_stuff.testing import Test, Story
+from amaranth_stuff.testing import TestRunner, Story
 
 
 # from .resources import *
@@ -82,7 +82,7 @@ def test_shouldBeatAtSpecifiedFrequency():
 
         m.d.sync += [Assert(slowbeat.beat_n == ~slowbeat.beat_p)]
 
-    Test.perform(
+    TestRunner.perform(
         SlowBeat(5),
         testBody,
         platform=DummyPlatformWith10HzDefaultClock(),

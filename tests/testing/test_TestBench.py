@@ -32,7 +32,7 @@ from amaranth.asserts import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.testing.TestBench import Story, TestBench
-from amaranth_stuff.testing import Test
+from amaranth_stuff.testing import TestRunner
 
 
 ###
@@ -79,7 +79,7 @@ def test_testbench_can_register_new_ports():
         with m.If(ftb.matchesStory("after negating a")):
             m.d.sync += [Assert(b), Assert(~c)]
 
-    Test.perform(TestBench(), testBody)
+    TestRunner.perform(TestBench(), testBody)
 
 
 def test_with_failing_test():
@@ -102,7 +102,7 @@ def test_with_failing_test():
             m.d.sync += Assert(b)  # MUST fail : b is setup to be (~a)
 
     with pytest.raises(CalledProcessError):
-        Test.perform(TestBench(), testBody)
+        TestRunner.perform(TestBench(), testBody)
 
 
 ###
@@ -163,7 +163,7 @@ def test_testBench_provide_helper_to_test_stories():
         with m.If(tb.matchesStory("reset happens")):
             m.d.sync += Assert(counter.out == 1)
 
-    Test.perform(DummyCounter(2), testBody)
+    TestRunner.perform(DummyCounter(2), testBody)
 
 
 def test_testBench_provide_helper_to_verify_the_content_of_a_logger():
@@ -202,7 +202,7 @@ def test_testBench_provide_helper_to_verify_the_content_of_a_logger():
         with m.If(tb.matchesStory("typical")):
             m.d.sync += tb.verifyLogs("dout", [1, 1, 0, 1, 1, 0])
 
-    Test.perform(DummySynchronousNotGate(), testBody)
+    TestRunner.perform(DummySynchronousNotGate(), testBody)
 
 
 def test_testBench_provide_helper_to_verify_the_content_of_a_logger_and_the_current_value():
@@ -237,4 +237,4 @@ def test_testBench_provide_helper_to_verify_the_content_of_a_logger_and_the_curr
         with m.If(tb.matchesStory("typical")):
             m.d.sync += tb.verifyLogsAndNow("dout", [1, 1, 0, 1, 1, 0, 1])
 
-    Test.perform(DummySynchronousNotGate(), testBody)
+    TestRunner.perform(DummySynchronousNotGate(), testBody)

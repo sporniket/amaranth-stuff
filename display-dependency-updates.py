@@ -25,7 +25,7 @@ def genDependencyLineWorkflow(package: str, url: str, branch: str) -> None:
 cn = Console()
 cn.print(Markdown("# pyproject.toml updates"))
 genDependencyLine(
-    "amaranth\[builtin-yosys]", "https://github.com/amaranth-lang/amaranth", "main"
+    "amaranth[builtin-yosys]", "https://github.com/amaranth-lang/amaranth", "main"
 )
 genDependencyLine(
     "amaranth-boards", "https://github.com/amaranth-lang/amaranth-boards", "main"

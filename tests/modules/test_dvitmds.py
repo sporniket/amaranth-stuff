@@ -27,7 +27,7 @@ from amaranth.asserts import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import DviTmdsEncoder
-from amaranth_stuff.testing import Test, Story
+from amaranth_stuff.testing import TestRunner, Story
 
 ###
 ### Test suite on DviTmdsEncoder
@@ -93,7 +93,7 @@ def test_DviTmdsEncoder_shouldEncodeDataCorrectly():
         [0b10101010, -2, 0b1000110011, -2],
         [0b10101010, 2, 0b1000110011, 2],
     ]:
-        Test.perform(
+        TestRunner.perform(
             DviTmdsEncoder(
                 Signal(8, name="dataIn"),
                 Signal(name="vde"),
@@ -141,7 +141,7 @@ def test_DviTmdsEncoder_shouldSendControlDataWhenVdeIsNegated():
                     Assert(encoder.halfBalanceCounter == 0),
                 ]
 
-    Test.perform(
+    TestRunner.perform(
         DviTmdsEncoder(
             Signal(8, name="dataIn"),
             Signal(name="vde"),

@@ -27,7 +27,7 @@ from amaranth.asserts import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import Sequencer
-from amaranth_stuff.testing import Test, Story
+from amaranth_stuff.testing import TestRunner, Story
 
 ###
 ### Test suite on Sequencer
@@ -71,4 +71,4 @@ def test_Sequencer_should_work_as_expected():
         with m.If(tb.matchesStory("when reaching end of step 3")):
             m.d.sync += Assert(sequencer.steps == 1)
 
-    Test.perform(Sequencer([2, 3, 4, 1]), testBody)
+    TestRunner.perform(Sequencer([2, 3, 4, 1]), testBody)
