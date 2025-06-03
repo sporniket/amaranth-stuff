@@ -27,11 +27,28 @@ from amaranth.asserts import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import Sequencer
-from amaranth_stuff.testing import TestRunner, Story
+from amaranth_stuff.testing import TestRunner, Story, TestSuiteRunner
 
 ###
 ### Test suite on Sequencer
 ###
+
+
+def test_Sequencer_should_work():
+    TestSuiteRunner(
+        lambda: Sequencer([2, 3, 4, 1]),
+        lambda dut, clockDomain: {"rst": clockDomain.rst, "steps": dut.steps},
+        [
+            Story(
+                "loop around the program",
+                {
+                    "rst": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    "steps": [0, 1, 1, 2, 2, 2, 4, 4, 4, 4, 8, 1, 1, 2],
+                },
+                given=["rst"],
+            )
+        ],
+    ).run()
 
 
 def test_Sequencer_should_work_as_expected():
