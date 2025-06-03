@@ -34,7 +34,7 @@ from amaranth_stuff.testing import TestRunner, Story, TestSuiteRunner
 ###
 
 
-def test_RippleCounter_shouldWork():
+def test_RippleCounter_should_work():
     TestSuiteRunner(
         lambda: RippleCounter(3),
         lambda dut, clockDomain: {"rst": clockDomain.rst, "value": dut.value},

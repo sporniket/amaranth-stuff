@@ -30,7 +30,7 @@ from amaranth_stuff.modules import Decoder
 from amaranth_stuff.testing import TestRunner, Story, TestSuiteRunner
 
 
-def test_Decoder_shouldWork():
+def test_Decoder_should_work():
     span = (1 << 2) - 1
     # there is 1 invalid input for testing the error signal of decoder
     TestSuiteRunner(
