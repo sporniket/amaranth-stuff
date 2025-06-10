@@ -33,9 +33,12 @@ class Sequencer(Elaboratable):
             if step == 0:
                 raise ValueError("A step MUST have a duration of at least one cycle !")
         self.steps = Signal(len(program))
-        self._maxCounter = sum(program)
+        self._maxCounter = sum(program) - 1
         self.counter = Signal(range(0, self._maxCounter))
         self._program = program
+        self._boundaries = [
+            0 if i == 0 else sum(program[0:i]) - 1 for i, v in enumerate(program)
+        ]
         self.reset = Signal(reset=1)  # synchronous reset
 
     def ports(self) -> List[Signal]:
@@ -49,19 +52,14 @@ class Sequencer(Elaboratable):
             m.d.sync += [self.reset.eq(0), self.steps.eq(1)]
 
         with m.Else():
+            # change value at each boundary
+            for i, v in enumerate(self._boundaries):
+                with m.If(self.counter == v):
+                    m.d.sync += self.steps.eq(1 << i)
+
             # Run counter
             m.d.sync += self.counter.eq((self.counter + 1)[0 : self.counter.width])
-            trigger = 0
-
-            # Assert next step after each duration
-            for step in self._program[:-1]:
-                trigger = trigger + step - 1
-                with m.If(self.counter == trigger):
-                    m.d.sync += self.steps.eq(Cat(self.steps[-1], self.steps[:-1]))
-
-            # Cycle counter, reset sequence
-            trigger += self._program[-1] - 1
-            with m.If(self.counter == trigger):
+            with m.If(self.counter == self._maxCounter):
                 m.d.sync += [self.counter.eq(0), self.steps.eq(1)]
 
         return m

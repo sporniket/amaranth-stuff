@@ -20,6 +20,7 @@ If not, see <https://www.gnu.org/licenses/>. 
 """
 
 ### builtin deps
+import os
 from os.path import exists
 from pathlib import Path
 import pytest
@@ -34,7 +35,7 @@ from amaranth.build import Platform
 from amaranth.asserts import Assert
 
 ### amarant-stuff deps
-from amaranth_stuff.testing import Test, Story
+from amaranth_stuff.testing import TestRunner, Story
 from amaranth_stuff.modules import Sequencer, RippleCounter
 
 
@@ -81,10 +82,13 @@ def test_perform_shouldFailMiserably():
             )  # fails because complement = not(output)
 
     with pytest.raises(CalledProcessError):
-        Test.perform(DummyModule(), testBody)
+        TestRunner.perform(DummyModule(), testBody)
 
-    assert exists(Path("build-tests/test_perform_shouldFailMiserably.il"))
-    assert exists(Path("build-tests/test_perform_shouldFailMiserably.sby"))
+    assert os.path.exists(Path("build-tests", "test_perform_shouldFailMiserably.il"))
+    assert os.path.exists(Path("build-tests", "test_perform_shouldFailMiserably.sby"))
+    assert os.path.exists(
+        Path("build-tests", "test_perform_shouldFailMiserably", "FAIL")
+    )
 
 
 def test_perform_should_combine_test_name_and_provided_description():
@@ -110,16 +114,25 @@ def test_perform_should_combine_test_name_and_provided_description():
             )  # fails because complement = not(output)
 
     with pytest.raises(CalledProcessError):
-        Test.perform(DummyModule(), testBody, description="foo")
+        TestRunner.perform(DummyModule(), testBody, description="foo")
 
-    assert exists(
+    assert os.path.exists(
         Path(
-            "build-tests/test_perform_should_combine_test_name_and_provided_description__foo.il"
+            "build-tests",
+            "test_perform_should_combine_test_name_and_provided_description__foo.il",
         )
     )
-    assert exists(
+    assert os.path.exists(
         Path(
-            "build-tests/test_perform_should_combine_test_name_and_provided_description__foo.sby"
+            "build-tests",
+            "test_perform_should_combine_test_name_and_provided_description__foo.sby",
+        )
+    )
+    assert os.path.exists(
+        Path(
+            "build-tests",
+            "test_perform_should_combine_test_name_and_provided_description__foo",
+            "FAIL",
         )
     )
 
@@ -177,7 +190,17 @@ def test_perform_should_fail_flawed_long_test():
             m.d.sync += Assert(sequencer.steps == 4)
 
     with pytest.raises(CalledProcessError):
-        Test.perform(Sequencer([18, 3, 4, 1]), testBody)
+        TestRunner.perform(Sequencer([18, 3, 4, 1]), testBody)
+
+    assert os.path.exists(
+        Path("build-tests", "test_perform_should_fail_flawed_long_test.il")
+    )
+    assert os.path.exists(
+        Path("build-tests", "test_perform_should_fail_flawed_long_test.sby")
+    )
+    assert os.path.exists(
+        Path("build-tests", "test_perform_should_fail_flawed_long_test", "FAIL")
+    )
 
 
 def test_perform_should_provide_a_correct_reset_signal():
@@ -221,6 +244,45 @@ def test_perform_should_provide_a_correct_reset_signal():
             m.d.sync += Assert(counter.value == 1)  # MUST pass
 
     with pytest.raises(CalledProcessError):
-        Test.perform(RippleCounter(3), verifyStory, description="verify story")
+        TestRunner.perform(RippleCounter(3), verifyStory, description="verify story")
 
-    Test.perform(RippleCounter(3), testBody, description="verify behaviour")
+    assert os.path.exists(
+        Path(
+            "build-tests",
+            "test_perform_should_provide_a_correct_reset_signal__verify_story.il",
+        )
+    )
+    assert os.path.exists(
+        Path(
+            "build-tests",
+            "test_perform_should_provide_a_correct_reset_signal__verify_story.sby",
+        )
+    )
+    assert os.path.exists(
+        Path(
+            "build-tests",
+            "test_perform_should_provide_a_correct_reset_signal__verify_story",
+            "FAIL",
+        )
+    )
+
+    TestRunner.perform(RippleCounter(3), testBody, description="verify behaviour")
+    assert os.path.exists(
+        Path(
+            "build-tests",
+            "test_perform_should_provide_a_correct_reset_signal__verify_behaviour.il",
+        )
+    )
+    assert os.path.exists(
+        Path(
+            "build-tests",
+            "test_perform_should_provide_a_correct_reset_signal__verify_behaviour.sby",
+        )
+    )
+    assert os.path.exists(
+        Path(
+            "build-tests",
+            "test_perform_should_provide_a_correct_reset_signal__verify_behaviour",
+            "PASS",
+        )
+    )

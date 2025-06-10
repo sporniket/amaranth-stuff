@@ -27,57 +27,33 @@ from amaranth.asserts import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import Decoder
-from amaranth_stuff.testing import Test, Story
+from amaranth_stuff.testing import TestRunner, Story, TestSuiteRunner
 
 
-def test_shouldAssertTheCorrectBitWhenInputIsInRange():
-    def testBody(m: Module, cd: ClockDomain):
-        rst = cd.rst
-        decoder = m.submodules.dut
-        span = decoder.span
-
-        tb = m.submodules.testBench
-        tb.givenStoryBook(
-            participants={"rst": rst, "input": decoder.input},
-            stories=[
-                Story(f"When input is {i}", {"rst": [0], "input": [i]})
-                for i in range(0, span)
-            ],
-        )
-        for i in range(0, span):
-            with m.If(tb.matchesStory(f"When input is {i}")):
-                m.d.sync += [
-                    Assert(decoder.output == (1 << i)),
-                    Assert(~(decoder.outOfRange)),
-                ]
-
-    Test.perform(
-        Decoder(
-            (1 << 2) - 1
-        ),  # there is 1 invalid input for testing the error signal of decoder
-        testBody,
-    )
-
-
-def test_shouldAssertTheErrorBitWhenInputIsOutOfRange():
-    def testBody(m: Module, cd: ClockDomain):
-        rst = cd.rst
-        decoder = m.submodules.dut
-        span = decoder.span
-
-        tb = m.submodules.testBench
-        tb.givenStoryBook(
-            participants={"rst": rst, "input": decoder.input},
-            stories=[
-                Story("When input is out of range", {"rst": [0], "input": [span]})
-            ],
-        )
-        with m.If(tb.matchesStory("When input is out of range")):
-            m.d.sync += [Assert(decoder.output == 0), Assert(decoder.outOfRange)]
-
-    Test.perform(
-        Decoder(
-            (1 << 2) - 1
-        ),  # there is 1 invalid input for testing the error signal of decoder
-        testBody,
-    )
+def test_Decoder():
+    span = (1 << 2) - 1
+    # there is 1 invalid input for testing the error signal of decoder
+    TestSuiteRunner(
+        lambda: Decoder(span),
+        lambda dut, clockDomain: {
+            "rst": clockDomain.rst,
+            "input": dut.input,
+            "output": dut.output,
+            "outOfRange": dut.outOfRange,
+        },
+        [
+            Story(
+                f"When input is {i}",
+                {"rst": [0], "input": [i], "output": [1 << i], "outOfRange": [0]},
+                given=["rst", "input"],
+            )
+            for i in range(0, span)
+        ]
+        + [
+            Story(
+                "When input is out of range",
+                {"rst": [0], "input": [span], "output": [0], "outOfRange": [1]},
+                given=["rst", "input"],
+            )
+        ],
+    ).run()

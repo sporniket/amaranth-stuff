@@ -23,20 +23,19 @@ If not, see <https://www.gnu.org/licenses/>. 
 from typing import List  # , Dict, Tuple, Optional
 
 ### amaranth -- main deps
-from amaranth import Cat, Elaboratable, Module, Signal
+from amaranth import Cat, Elaboratable, Module, Signal, Const
 from amaranth.build import Platform
 
 
 class ShiftRegisterSendLsbFirst(Elaboratable):
-    def __init__(self, dataIn: Signal, phase=0):
+    def __init__(self, dataIn: Signal, delay=0):
         self.dataIn = dataIn
         self.load = Signal()
         self.dataOut = Signal()
         self.dataOutInverted = Signal(reset=1)
-        self._nextLoad = Signal()
         self._buffer = Signal.like(dataIn)
-        self._state = Signal(dataIn.shape(), reset=(1 << (phase % dataIn.width)))
-        self._syncReset = Signal(reset=1)
+        self._state = Signal(dataIn.shape(), reset=(1 << (dataIn.width - 1)))
+        self._delay = Signal(Const(delay).shape(), reset=delay)
 
     def ports(self) -> List[Signal]:
         return [self.dataIn, self.load, self.dataOutInverted, self.dataOut]
@@ -47,28 +46,23 @@ class ShiftRegisterSendLsbFirst(Elaboratable):
         # BEGIN combinatorial part
 
         m.d.comb += [
-            self._nextLoad.eq(self._state[0]),
+            #            self._nextLoad.eq(self._state[0]),
+            self.dataOut.eq(self._buffer[0]),
             self.dataOutInverted.eq(~self.dataOut),
+            self.load.eq(self._state[0]),
         ]
 
-        with m.If(self._syncReset == 0):
-            nextState = Signal.like(self._state)
-            m.d.comb += nextState.eq(Cat(self._state[1:], self._state[0]))
-
-            nextBuffer = Signal.like(self._buffer)
-            with m.If(self._nextLoad == 1):
-                m.d.comb += nextBuffer.eq(self.dataIn)
-            with m.Else():
-                m.d.comb += nextBuffer.eq(Cat(self._buffer[1:], 0))
-
         # BEGIN synchronized part
-        with m.If(self._syncReset == 1):
-            m.d.sync += self._syncReset.eq(0)
+        with m.If(self._delay != 0):
+            m.d.sync += self._delay.eq((self._delay - 1)[0 : self._delay.width])
         with m.Else():
+            with m.If(self._state[0]):
+                m.d.sync += [self._buffer.eq(self.dataIn)]
+            with m.Else():
+                m.d.sync += [self._buffer.eq(Cat(self._buffer[1:], 0))]
+
             m.d.sync += [
-                self.load.eq(self._nextLoad),
-                self._buffer.eq(nextBuffer),
-                self.dataOut.eq(nextBuffer[0]),
-                self._state.eq(nextState),
+                self._state.eq(Cat(self._state[-1], self._state[0:-1])),
             ]
+
         return m

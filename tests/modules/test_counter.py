@@ -27,71 +27,33 @@ from amaranth.asserts import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import RippleCounter, SlowRippleCounter
-from amaranth_stuff.testing import Test, Story
+from amaranth_stuff.testing import TestRunner, Story, TestSuiteRunner
 
 ###
 ### Test suite on RippleCounter
 ###
 
 
-def test_RippleCounter_shouldIncrementValueAtEachClock():
-    def testBody(m: Module, cd: ClockDomain):
-        rst = cd.rst
-        counter = m.submodules.dut
-        width = counter.width
-        maxRange = 2**width
-        maxValue = maxRange - 1
-
-        tb = m.submodules.testBench
-        tb.givenStoryBook(
-            participants={"rst": rst, "value": counter.value},
-            stories=[
-                Story("After reset has been negated", {"rst": [1, 0]}),
-                Story(
-                    "After value has reached 0",
-                    {"rst": [0, 0], "value": [maxValue, 0]},
-                ),
-            ]
-            + [
-                Story(
-                    f"After value has reached {i}",
-                    {"rst": [0], "value": [i]},
-                )
-                for i in range(1, maxValue)
-            ],
-        )
-
-        with m.If(tb.matchesStory("After reset has been negated")):
-            m.d.sync += Assert(counter.value == 1)
-        for i in range(0, maxValue):
-            with m.If(tb.matchesStory(f"After value has reached {i}")):
-                m.d.sync += Assert(counter.value == (i + 1))
-
-    Test.perform(RippleCounter(3), testBody)
-
-
-def test_RippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByTheWidth():
-    def testBody(m: Module, cd: ClockDomain):
-        rst = cd.rst
-        counter = m.submodules.dut
-        width = counter.width
-        maxRange = 2**width
-        maxValue = maxRange - 1
-
-        tb = m.submodules.testBench
-        tb.givenStoryBook(
-            participants={"rst": rst, "value": counter.value},
-            stories=[
-                Story(
-                    "After the counter has reached the max value",
-                    {"rst": [0], "value": [maxValue]},
-                ),
-            ],
-        )
-        with m.If(tb.matchesStory("After the counter has reached the max value")):
-            m.d.sync += Assert(counter.value == 0)
-
-    Test.perform(RippleCounter(3), testBody)
+def test_RippleCounter():
+    TestSuiteRunner(
+        lambda: RippleCounter(3),
+        lambda dut, clockDomain: {"rst": clockDomain.rst, "value": dut.value},
+        [
+            Story(
+                "One full cycle",
+                {
+                    "rst": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    "value": [0, 1, 2, 3, 4, 5, 6, 7, 0, 1],
+                },
+                given=["rst"],
+            ),
+            Story(
+                "When reset stays high",
+                {"rst": [1, 1], "value": [0, 0]},
+                given=["rst"],
+            ),
+        ],
+    ).run()
 
 
 ###
@@ -122,7 +84,7 @@ def test_SlowRippleCounter_shouldIncrementValueAtEachBeatLeadingEdge():
             with m.If(tb.matchesStory(f"Beat after value has reached {i}")):
                 m.d.sync += Assert(counter.value == (i + 1))
 
-    Test.perform(SlowRippleCounter(3), testBody)
+    TestRunner.perform(SlowRippleCounter(3), testBody)
 
 
 def test_SlowRippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByTheWidth():
@@ -146,7 +108,7 @@ def test_SlowRippleCounter_shouldReturnToZeroAfterReachingMaxValueSupportedByThe
         with m.If(tb.matchesStory("Beat after value has reached maxValue")):
             m.d.sync += Assert(counter.value == 0)
 
-    Test.perform(SlowRippleCounter(3), testBody)
+    TestRunner.perform(SlowRippleCounter(3), testBody)
 
 
 def test_SlowRippleCounter_shouldKeepValueAtEachBeatTrailingEdge():
@@ -172,7 +134,7 @@ def test_SlowRippleCounter_shouldKeepValueAtEachBeatTrailingEdge():
             with m.If(tb.matchesStory(f"Beat falling after value has reached {i}")):
                 m.d.sync += Assert(counter.value == i)
 
-    Test.perform(SlowRippleCounter(3), testBody)
+    TestRunner.perform(SlowRippleCounter(3), testBody)
 
 
 def test_SlowRippleCounter_shouldKeepValueWhenBeatDoesNotChange():
@@ -211,4 +173,4 @@ def test_SlowRippleCounter_shouldKeepValueWhenBeatDoesNotChange():
             ):
                 m.d.sync += Assert(counter.value == i)
 
-    Test.perform(SlowRippleCounter(3), testBody)
+    TestRunner.perform(SlowRippleCounter(3), testBody)

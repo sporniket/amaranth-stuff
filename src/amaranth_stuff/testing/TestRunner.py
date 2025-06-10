@@ -40,8 +40,61 @@ from amaranth._toolchain import require_tool  # May need to be re-implemented lo
 from .TestBench import TestBench
 
 
-class Test:
-    """Just a collection of utilities"""
+IGNORED_FRAME_NAMES = ["run", "_runBehaviourTest", "_runReachabilityTest"]
+
+
+class TestRunner:
+    __test__ = False  # so that pytest does NOT try to collect it
+
+    """A system to generate test benches to be formally verified by SymbiYosis (sby)"""
+
+    def __init__(self, deviceFactory, castingFactory, story):
+        if len(story.expected) == 0:
+            raise ValueError(f"story.must.have.expected.participants")
+        self._deviceFactory = deviceFactory
+        self._castingFactory = castingFactory
+        self._story = story
+
+    def _runBehaviourTest(self):
+        def testBody(m: Module, cd: ClockDomain):
+            dut = m.submodules.dut
+            tb = m.submodules.testBench
+            tb.givenStoryBook(
+                participants=self._castingFactory(dut, cd),
+                stories=[self._story],
+            )
+            with m.If(tb.matchesStory(self._story.title)):
+                for p in self._story.expected:
+                    m.d.sync += tb.verifyLogsAndNow(p, self._story.content[p])
+
+        TestRunner.perform(
+            self._deviceFactory(),
+            testBody,
+            description=f"{self._story.title}__behaviour",
+        )
+
+    def _runReachabilityTest(self):
+        def testBody(m: Module, cd: ClockDomain):
+            dut = m.submodules.dut
+            tb = m.submodules.testBench
+            tb.givenStoryBook(
+                participants=self._castingFactory(dut, cd),
+                stories=[self._story],
+            )
+            with m.If(tb.matchesStory(self._story.title)):
+                for p in self._story.expected:
+                    m.d.sync += tb.fail(p)
+
+        TestRunner.perform(
+            self._deviceFactory(),
+            testBody,
+            description=f"{self._story.title}__reachability",
+            expectFailure=True,
+        )
+
+    def run(self):
+        self._runReachabilityTest()
+        self._runBehaviourTest()
 
     @staticmethod
     def _generateTestBench(ilName: str, dut: Elaboratable, test, platform: Platform):
@@ -77,7 +130,6 @@ class Test:
         safeName = re.sub("[.]+", " ", safeName)
         safeName = safeName.strip()
         safeName = re.sub("[ ]+", "_", safeName)
-        safeName = re.sub("[-]", "_", safeName)
         return safeName
 
     @staticmethod
@@ -111,6 +163,7 @@ class Test:
         description: str = None,
         depth: int = 20,
         platform: Platform = None,
+        expectFailure: bool = False,
     ):
         """Perform a test on amaranth module using SymbiYosis (sby)
 
@@ -124,13 +177,16 @@ class Test:
         Path("build-tests").mkdir(parents=True, exist_ok=True)
         currFrame = inspect.currentframe()
         callFrameStack = inspect.getouterframes(currFrame)
-        frameDescription = callFrameStack[1][3]
+        for fs in callFrameStack[1:]:
+            frameDescription = fs[3]
+            if frameDescription not in IGNORED_FRAME_NAMES:
+                break
         if frameDescription == "__main__":
             frameDescription = test.__name__
         baseName = (
             frameDescription
             if description is None
-            else f"{frameDescription}__{Test._asSafeName(description)}"
+            else f"{frameDescription}__{TestRunner._asSafeName(description)}"
         )
         print(f"##########>")
         print(f"##########> {baseName}")
@@ -139,9 +195,9 @@ class Test:
         sbyName = f"{baseName}.sby"
 
         print(f"Generating {ilName}...")
-        requiredDepth = Test._generateTestBench(ilName, dut, test, platform)
+        requiredDepth = TestRunner._generateTestBench(ilName, dut, test, platform)
         print(f"Generating {sbyName}...")
-        Test._generateSbyConfig(sbyName, ilName, max([depth, requiredDepth]))
+        TestRunner._generateSbyConfig(sbyName, ilName, max([depth, requiredDepth]))
 
         invoke_args = [require_tool("sby"), "-f", sbyName]
         print(f"Running {' '.join(invoke_args)}...")
@@ -152,4 +208,13 @@ class Test:
         shutil.move(ilName, "build-tests")
         shutil.move(sbyName, "build-tests")
 
-        runResult.check_returncode()
+        if expectFailure:
+            if runResult.returncode == 0:
+                raise subprocess.CalledProcessError(
+                    runResult.returncode,
+                    runResult.cmd,
+                    runResult.stdout,
+                    runResult.stderr,
+                )
+        else:
+            runResult.check_returncode()

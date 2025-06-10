@@ -31,7 +31,7 @@ from amaranth.asserts import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.testing.Logger import Logger
-from amaranth_stuff.testing import Test
+from amaranth_stuff.testing import TestRunner
 
 
 ###
@@ -84,4 +84,4 @@ def test_Logger_should_log_signal_history():
                 & logger.logs[5]
             )
 
-    Test.perform(Logger(Signal(), 5), testBody)
+    TestRunner.perform(Logger(Signal(), 5), testBody)

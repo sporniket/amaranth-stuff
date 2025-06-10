@@ -27,73 +27,29 @@ from amaranth.asserts import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import ShiftRegisterSendLsbFirst
-from amaranth_stuff.testing import Test, Story
+from amaranth_stuff.testing import TestRunner, Story, TestSuiteRunner
 
 
-def test_ShiftRegisterSendLsbFirst_should_serialize_data_in():
-    def testBody(m: Module, cd: ClockDomain):
-        rst = cd.rst
-        shiftRegister = m.submodules.dut
-
-        tb = m.submodules.testBench
-        tb.givenStoryBook(
-            participants={
-                "rst": rst,
-                "load": shiftRegister.load,
-                "din": shiftRegister.dataIn,
-                "dout": shiftRegister.dataOut,
-                "doutinv": shiftRegister.dataOutInverted,
-            },
-            stories=[
-                Story(
-                    "On load+4",
-                    {"load": [1, 0, 0, 0, 1], "din": [0b1011, 0, 0, 0, 0, 0]},
-                ),
-            ],
-        )
-
-        with m.If(tb.matchesStory("On load+4")):
-            m.d.sync += [
-                Assert(shiftRegister.load == 0),
-                Assert(shiftRegister.dataOut == 0),
-                Assert(shiftRegister.dataOutInverted == 1),
-                tb.verifyLogs("dout", [1, 1, 0, 1, 0]),
-                tb.verifyLogs("doutinv", [0, 0, 1, 0, 1]),
-            ]
-
-    Test.perform(
-        ShiftRegisterSendLsbFirst(Signal(unsigned(4), name="dataIn")), testBody
-    )
-
-
-def test_ShiftRegisterSendLsbFirst_should_delay_load_by_phase():
-    def testBody(m: Module, cd: ClockDomain):
-        rst = cd.rst
-        shiftRegister = m.submodules.dut
-        m.submodules.ref = shiftRegisterReference = ShiftRegisterSendLsbFirst(
-            shiftRegister.dataIn
-        )
-
-        tb = m.submodules.testBench
-        tb.givenStoryBook(
-            participants={
-                "rst": rst,
-                "load": shiftRegister.load,
-                "loadref": shiftRegisterReference.load,
-            },
-            stories=[
-                Story(
-                    "Reference load",
-                    {"loadref": [1, 0, 0, 0, 1, 0, 0, 0, 1]},
-                ),
-            ],
-        )
-
-        with m.If(tb.matchesStory("Reference load")):
-            m.d.sync += [
-                tb.verifyLogs("load", [0, 0, 1, 0, 0, 0, 1, 0, 0]),
-            ]
-
-    Test.perform(
-        ShiftRegisterSendLsbFirst(Signal(unsigned(4), name="dataIn"), 6), testBody
-    )
+def test_ShiftRegisterSendLsbFirst():
+    TestSuiteRunner(
+        lambda: ShiftRegisterSendLsbFirst(Signal(unsigned(4), name="dataIn"), 6),
+        lambda dut, clockDomain: {
+            "rst": clockDomain.rst,
+            "load": dut.load,
+            "din": dut.dataIn,
+            "dout": dut.dataOut,
+            "doutinv": dut.dataOutInverted,
+        },
+        [
+            Story(
+                "Phase should delay first load",
+                {
+                    "rst": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    "din": [0, 0, 0, 0, 0, 0, 0, 0b1011, 0, 0, 0, 0],
+                    "load": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    "dout": [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0],
+                },
+                given=["rst", "din"],
+            ),
+        ],
+    ).run()
