@@ -21,6 +21,7 @@ If not, see <https://www.gnu.org/licenses/>. 
 
 from .counter import RippleCounter, SlowRippleCounter
 from .decoder import Decoder
+from .delay import Delay
 from .slowbeat import SlowBeat
 from .dvitmds import DviTmdsEncoder
 from .sequencer import Sequencer
@@ -28,6 +29,7 @@ from .shiftreg import ShiftRegisterSendLsbFirst
 
 __all__ = [
     "Decoder",
+    "Delay",
     "DviTmdsEncoder",
     "RippleCounter",
     "Sequencer",
