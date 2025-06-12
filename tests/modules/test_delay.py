@@ -42,9 +42,9 @@ def test_Delay():
             Story(
                 f"should delay assertion",
                 {
-                    "rst": [1, 0, 0, 0, 0, 0, 0, 0],
-                    "dout": [0, 0, 0, 0, 0, 0, 1, 1],
-                    "doutInv": [1, 1, 1, 1, 1, 1, 0, 0],
+                    "rst": [1, 0, 0, 0] + [0, 0, 0, 0],
+                    "dout": [0, 0, 0, 0] + [0, 0, 1, 1],
+                    "doutInv": [1, 1, 1, 1] + [1, 1, 0, 0],
                 },
                 given=["rst"],
             )
