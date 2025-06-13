@@ -22,16 +22,17 @@ If not, see <https://www.gnu.org/licenses/>. 
 from .counter import RippleCounter, SlowRippleCounter
 from .decoder import Decoder
 from .delay import Delay
-from .slowbeat import SlowBeat
 from .dvitmds import DviTmdsEncoder
+from .pulsar import Pulsar
 from .sequencer import Sequencer
 from .shiftreg import ShiftRegisterSendLsbFirst
+from .slowbeat import SlowBeat
 
 __all__ = [
     "Decoder",
     "Delay",
     "DviTmdsEncoder",
-    "RippleCounter",
+    "Pulsar" "RippleCounter",
     "Sequencer",
     "ShiftRegisterSendLsbFirst",
     "SlowBeat",
