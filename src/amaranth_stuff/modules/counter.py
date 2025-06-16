@@ -43,26 +43,3 @@ class RippleCounter(Elaboratable):
         m.d.sync += [self.value.eq((self.value + 1)[0 : self.width])]
 
         return m
-
-
-class SlowRippleCounter(Elaboratable):
-    """Counter that is incremented on each leading edge of the active high `beat` input."""
-
-    def __init__(self, width: int):
-        self.width = width
-        self.value = Signal(width)
-        self.beat = Signal()
-
-    def ports(self) -> List[Signal]:
-        return [self.beat, self.value]
-
-    def elaborate(self, platform: Platform) -> Module:
-        m = Module()
-
-        previousBeatValue = Signal()
-        with m.If((self.beat != previousBeatValue)):
-            m.d.sync += [previousBeatValue.eq(self.beat)]
-            with m.If((self.beat == 1)):
-                m.d.sync += [self.value.eq((self.value + 1)[0 : self.width])]
-
-        return m

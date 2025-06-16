@@ -19,7 +19,7 @@ If not, see <https://www.gnu.org/licenses/>. 
 ---
 """
 
-from .counter import RippleCounter, SlowRippleCounter
+from .counter import RippleCounter
 from .decoder import Decoder
 from .delay import Delay
 from .dvitmds import DviTmdsEncoder
@@ -39,5 +39,4 @@ __all__ = [
     "Sequencer",
     "ShiftRegisterSendLsbFirst",
     "SlowBeat",
-    "SlowRippleCounter",
 ]
