@@ -5,18 +5,18 @@
 groups = ["default", "build", "ci", "lint", "scripting"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:f7b63d39c79eecb71694b6e93d2a791d53d5782998f2fdc7b5cf66a7f0002cc0"
+content_hash = "sha256:bff9aa4542f9eff39e10d0ee3c9db3a05cd2c63896a4b61ef48481363b826b6b"
 
 [[metadata.targets]]
 requires_python = ">=3.9"
 
 [[package]]
 name = "amaranth"
-version = "0.4.3"
+version = "0.4.4"
 requires_python = "~=3.8"
 git = "https://github.com/amaranth-lang/amaranth"
-ref = "v0.4.3"
-revision = "a430c1d4a37c07328d30e37de15d077c90dc0aa5"
+ref = "v0.4.4"
+revision = "0564dd5d7853bd768aef8cc1bd8405ec0b7e48c5"
 summary = "Amaranth hardware definition language"
 dependencies = [
     "Jinja2~=3.0",
@@ -26,14 +26,14 @@ dependencies = [
 
 [[package]]
 name = "amaranth-boards"
-version = "0.1.dev241"
+version = "0.1.dev243"
 requires_python = "~=3.8"
 git = "https://github.com/amaranth-lang/amaranth-boards"
-ref = "170675812b71ee722bcf8ccdb88409a9ad97ffe2"
-revision = "170675812b71ee722bcf8ccdb88409a9ad97ffe2"
+ref = "b67996c48f1bc91412605acd7012f242514d3927"
+revision = "b67996c48f1bc91412605acd7012f242514d3927"
 summary = "Board and connector definitions for Amaranth HDL"
 dependencies = [
-    "amaranth<0.5,>=0.4",
+    "amaranth<0.6,>=0.4",
 ]
 
 [[package]]
@@ -50,15 +50,15 @@ files = [
 
 [[package]]
 name = "amaranth"
-version = "0.4.3"
+version = "0.4.4"
 extras = ["builtin-yosys"]
 requires_python = "~=3.8"
 git = "https://github.com/amaranth-lang/amaranth"
-ref = "v0.4.3"
-revision = "a430c1d4a37c07328d30e37de15d077c90dc0aa5"
+ref = "v0.4.4"
+revision = "0564dd5d7853bd768aef8cc1bd8405ec0b7e48c5"
 summary = "Amaranth hardware definition language"
 dependencies = [
-    "amaranth @ git+https://github.com/amaranth-lang/amaranth@v0.4.3",
+    "amaranth @ git+https://github.com/amaranth-lang/amaranth@v0.4.4",
     "amaranth-yosys>=0.38",
 ]
 
@@ -177,6 +177,7 @@ extras = ["filecache"]
 requires_python = ">=3.7"
 summary = "httplib2 caching for requests"
 dependencies = [
+    "cachecontrol==0.13.1",
     "cachecontrol==0.13.1",
     "filelock>=3.8.0",
 ]
