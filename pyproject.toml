@@ -28,7 +28,7 @@ classifiers = [
     "Environment :: Console",
 ]
 dependencies = [
-    'amaranth[builtin-yosys] @ git+https://github.com/amaranth-lang/amaranth@v0.5.1',
+    'amaranth[builtin-yosys] @ git+https://github.com/amaranth-lang/amaranth@v0.5.2',
     'amaranth-boards @ git+https://github.com/amaranth-lang/amaranth-boards@19b97324ecf9111c5d16377af79f82aad761c476',
     'importlib-metadata; python_version>"3.8"',
 ]
