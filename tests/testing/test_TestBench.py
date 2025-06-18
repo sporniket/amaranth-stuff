@@ -28,7 +28,7 @@ from amaranth import ClockDomain, Elaboratable, Module, Signal
 from amaranth.build import Platform
 
 ### amaranth -- test deps
-from amaranth.asserts import Assert
+from amaranth.hdl import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.testing.TestBench import Story, TestBench
@@ -51,7 +51,7 @@ def test_testbench_can_register_new_ports():
         assert (
             a.name == "test_bench_0"
         )  # should give a serialized name to unnamed signals
-        b = tb.registerPort(Signal(name="b", reset=1))
+        b = tb.registerPort(Signal(name="b", init=1))
         assert len(tb.ports()) == 2
         assert b.name == "b"  # should leave named signals as they are
         c = tb.registerPort(Signal())
@@ -88,7 +88,7 @@ def test_with_failing_test():
         tb = m.submodules.dut
 
         a = tb.registerPort(Signal())
-        b = tb.registerPort(Signal(name="b", reset=1))
+        b = tb.registerPort(Signal(name="b", init=1))
         m.d.sync += b.eq(~a)
 
         # Use the framework testbench

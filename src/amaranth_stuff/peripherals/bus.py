@@ -161,7 +161,7 @@ class SignatureOfSimpleDataBus(Signature):
                 "toCentral": In(self.widthOfData),
                 "toPeripheral": Out(self.widthOfData),
                 "address": Out(self.widthOfAddress),
-                "dataStrobe": Out(1, reset=0),
-                "write": Out(1, reset=0),
+                "dataStrobe": Out(1, init=0),
+                "write": Out(1, init=0),
             }
         )

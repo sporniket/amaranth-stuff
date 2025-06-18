@@ -32,7 +32,7 @@ from amaranth import ClockDomain, Elaboratable, Module, Signal
 from amaranth.build import Platform
 
 ### amaranth -- test deps
-from amaranth.asserts import Assert
+from amaranth.hdl import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.testing import TestRunner, Story
@@ -47,7 +47,7 @@ class DummyModule(Elaboratable):
     def __init__(self):
         self.input = Signal()
         self.output = Signal()
-        self.complement = Signal(reset=1)
+        self.complement = Signal(init=1)
 
     def ports(self) -> List[Signal]:
         return [self.input, self.output, self.complement]

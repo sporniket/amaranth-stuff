@@ -23,7 +23,7 @@ If not, see <https://www.gnu.org/licenses/>. 
 from amaranth import ClockDomain, Module, Signal
 
 ### amaranth -- test deps
-from amaranth.asserts import Assert
+from amaranth.hdl import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import DviTmdsEncoder

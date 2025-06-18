@@ -69,20 +69,20 @@ class DviTmdsEncoder(Elaboratable):
     """
 
     def __init__(self, dataIn: Signal, vde: Signal, ctl0: Signal, ctl1: Signal):
-        if dataIn.width != 8 or dataIn.signed == True:
+        if len(dataIn) != 8 or dataIn.shape().signed == True:
             raise ValueError(
-                f"dataIn(signed = {dataIn.signed}, width = {dataIn.width}) MUST be unsigned, 8-bits width."
+                f"dataIn(signed = {dataIn.shape().signed}, width = {len(dataIn)}) MUST be unsigned, 8-bits width."
             )
-        if vde.width != 1:
-            raise ValueError(f"vde MUST have a width of 1 instead of {vde.width}")
-        if ctl0.width != 1:
-            raise ValueError(f"ctl0 MUST have a width of 1 instead of {ctl0.width}")
-        if ctl1.width != 1:
-            raise ValueError(f"ctl1 MUST have a width of 1 instead of {ctl1.width}")
+        if len(vde) != 1:
+            raise ValueError(f"vde MUST have a width of 1 instead of {len(vde)}")
+        if len(ctl0) != 1:
+            raise ValueError(f"ctl0 MUST have a width of 1 instead of {len(ctl0)}")
+        if len(ctl1) != 1:
+            raise ValueError(f"ctl1 MUST have a width of 1 instead of {len(ctl1)}")
 
         self.dataIn = dataIn
         # when reset, vde is negated, as well as ctl[0:1], thus dataOut should be 0b0010101011.
-        self.dataOut = Signal(10, reset=0b0010101011)
+        self.dataOut = Signal(10, init=0b0010101011)
         self.videoDisplayEnable = vde
         self.ctl0 = ctl0
         self.ctl1 = ctl1

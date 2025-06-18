@@ -27,7 +27,7 @@ from amaranth import Elaboratable, Module, Signal
 from amaranth.build import Platform
 
 ### amaranth -- test deps
-from amaranth.asserts import Assert
+from amaranth.hdl import Assert
 
 ### local deps
 from .Logger import Logger

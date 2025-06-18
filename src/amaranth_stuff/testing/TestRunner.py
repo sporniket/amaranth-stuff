@@ -103,7 +103,7 @@ class TestRunner:
         # to add them to the ports
         # otherwise the verification always pass !!
         sync = ClockDomain("sync")
-        rst = Signal(reset=1)
+        rst = Signal(init=1)
         sync.rst = rst
 
         ###

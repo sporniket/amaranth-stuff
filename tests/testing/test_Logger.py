@@ -24,10 +24,9 @@ from subprocess import CalledProcessError
 
 ### amaranth -- main deps
 from amaranth import ClockDomain, Module, Signal, signed
-from amaranth.hdl.ir import UnusedElaboratable
 
 ### amaranth -- test deps
-from amaranth.asserts import Assert
+from amaranth.hdl import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.testing.Logger import Logger
@@ -40,14 +39,14 @@ from amaranth_stuff.testing import TestRunner
 
 
 def test_Logger_should_use_signals_with_same_shape_and_reset_value():
-    logger = Logger(Signal(signed(5), reset=3), 6)
+    logger = Logger(Signal(signed(5), init=3), 6)
     # This is a pure python test, so of course the logger will not be used.
     logger._MustUse__silence = True
 
     assert logger.source.shape().width == 5 and logger.source.shape().signed == True
     assert len(logger.logs) == 7
     for i in logger.logs:
-        assert i.shape().width == 5 and i.shape().signed == True and i.reset == 3
+        assert i.shape().width == 5 and i.shape().signed == True and i.init == 3
 
 
 def test_Logger_should_log_signal_history():

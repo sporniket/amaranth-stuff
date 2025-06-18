@@ -39,7 +39,7 @@ class Sequencer(Elaboratable):
         self._boundaries = [
             0 if i == 0 else sum(program[0:i]) - 1 for i, v in enumerate(program)
         ]
-        self.reset = Signal(reset=1)  # synchronous reset
+        self.reset = Signal(init=1)  # synchronous reset
 
     def ports(self) -> List[Signal]:
         return [self.steps]
@@ -58,7 +58,7 @@ class Sequencer(Elaboratable):
                     m.d.sync += self.steps.eq(1 << i)
 
             # Run counter
-            m.d.sync += self.counter.eq((self.counter + 1)[0 : self.counter.width])
+            m.d.sync += self.counter.eq((self.counter + 1)[0 : len(self.counter)])
             with m.If(self.counter == self._maxCounter):
                 m.d.sync += [self.counter.eq(0), self.steps.eq(1)]
 

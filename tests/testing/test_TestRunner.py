@@ -30,7 +30,7 @@ from amaranth import ClockDomain, Elaboratable, Module, Signal
 from amaranth.build import Platform
 
 ### amaranth -- test deps
-from amaranth.asserts import Assert
+from amaranth.hdl import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.testing.TestBench import Story, TestBench

@@ -30,7 +30,7 @@ from amaranth.build import Platform
 class MonoImpulse(Elaboratable):
     def __init__(self):
         self.dataOut = Signal()
-        self.dataOutInverted = Signal(reset=1)
+        self.dataOutInverted = Signal(init=1)
         self._done = Signal()
 
     def ports(self) -> List[Signal]:

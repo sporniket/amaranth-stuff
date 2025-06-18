@@ -31,9 +31,9 @@ class Delay(Elaboratable):
     """Generate logic that wait the specified amount of clock cycles before asserting its output."""
 
     def __init__(self, delay: int = 0):
-        self.delay = Signal(range(delay + 1), reset=delay)
+        self.delay = Signal(range(delay + 1), init=delay)
         self.dataOut = Signal()
-        self.dataOutInverted = Signal(reset=1)
+        self.dataOutInverted = Signal(init=1)
 
     def ports(self) -> List[Signal]:
         return [self.delay, self.dataOut, self.dataOutInverted]
@@ -48,6 +48,6 @@ class Delay(Elaboratable):
         with m.If(self.delay == 0):
             m.d.sync += [self.dataOut.eq(1)]
         with m.Else():
-            m.d.sync += [self.delay.eq((self.delay - 1)[0 : self.delay.width])]
+            m.d.sync += [self.delay.eq((self.delay - 1)[0 : len(self.delay)])]
 
         return m

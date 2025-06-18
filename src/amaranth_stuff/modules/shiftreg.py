@@ -32,10 +32,10 @@ class ShiftRegisterSendLsbFirst(Elaboratable):
         self.dataIn = dataIn
         self.load = Signal()
         self.dataOut = Signal()
-        self.dataOutInverted = Signal(reset=1)
+        self.dataOutInverted = Signal(init=1)
         self._buffer = Signal.like(dataIn)
-        self._state = Signal(dataIn.shape(), reset=(1 << (dataIn.width - 1)))
-        self._delay = Signal(Const(delay).shape(), reset=delay)
+        self._state = Signal(dataIn.shape(), init=(1 << (len(dataIn) - 1)))
+        self._delay = Signal(Const(delay).shape(), init=delay)
 
     def ports(self) -> List[Signal]:
         return [self.dataIn, self.load, self.dataOutInverted, self.dataOut]
@@ -54,7 +54,7 @@ class ShiftRegisterSendLsbFirst(Elaboratable):
 
         # BEGIN synchronized part
         with m.If(self._delay != 0):
-            m.d.sync += self._delay.eq((self._delay - 1)[0 : self._delay.width])
+            m.d.sync += self._delay.eq((self._delay - 1)[0 : len(self._delay)])
         with m.Else():
             with m.If(self._state[0]):
                 m.d.sync += [self._buffer.eq(self.dataIn)]

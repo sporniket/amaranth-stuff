@@ -37,7 +37,7 @@ class SlowBeat(Elaboratable):
             freq (int): target frequency, in Hertz.
         """
         self.frequency = frequency
-        self.beat_p = Signal(reset=1)  # the active high clock signal
+        self.beat_p = Signal(init=1)  # the active high clock signal
         self.beat_n = Signal()  # the active low clock signal
 
     def ports(self) -> List[Signal]:
@@ -55,11 +55,11 @@ class SlowBeat(Elaboratable):
 
         m = Module()
         limit = int(platform.default_clk_frequency // self.frequency // 2)  # limit >= 1
-        timer = Signal(range(limit), reset=limit - 1)
+        timer = Signal(range(limit), init=limit - 1)
 
         m.d.comb += self.beat_n.eq(~self.beat_p)
         with m.If(timer == 0):
-            m.d.sync += timer.eq(timer.reset)
+            m.d.sync += timer.eq(timer.init)
             m.d.sync += self.beat_p.eq(~self.beat_p)
         with m.Else():
             m.d.sync += timer.eq(timer - 1)

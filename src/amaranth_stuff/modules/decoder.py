@@ -35,7 +35,7 @@ class Decoder(Elaboratable):
             raise ValueError("Decoder MUST have a span of at least 2.")
         self.span = span
         self.input = Signal(range(0, span))
-        self.output = Signal(span, reset=1)
+        self.output = Signal(span, init=1)
         self.outOfRange = Signal()
 
     def ports(self) -> List[Signal]:

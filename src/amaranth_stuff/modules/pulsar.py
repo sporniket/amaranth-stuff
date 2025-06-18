@@ -30,7 +30,7 @@ from amaranth.build import Platform
 class Pulsar(Elaboratable):
     def __init__(self, period: int = 1):
         self.dataOut = Signal()
-        self.dataOutInverted = Signal(reset=1)
+        self.dataOutInverted = Signal(init=1)
         self._delay = Signal(Const(period).shape())
         self._period = period
 
@@ -49,7 +49,7 @@ class Pulsar(Elaboratable):
         # BEGIN synchronized part
         with m.If(self._delay != 0):
             m.d.sync += [
-                self._delay.eq((self._delay - 1)[0 : self._delay.width]),
+                self._delay.eq((self._delay - 1)[0 : len(self._delay)]),
                 self.dataOut.eq(0),
             ]
         with m.Else():
