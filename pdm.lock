@@ -5,18 +5,18 @@
 groups = ["default", "build", "ci", "lint", "scripting"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:2b52a77d3349c11062b02e44c694f60d84a3a625d33cdfc1c2d397b8a906ef56"
+content_hash = "sha256:2dec47abbeef155098dc2b4381d66204fb353dc65c8df8327736598c610ffe88"
 
 [[metadata.targets]]
 requires_python = ">=3.9"
 
 [[package]]
 name = "amaranth"
-version = "0.5.2"
+version = "0.5.3"
 requires_python = "~=3.8"
 git = "https://github.com/amaranth-lang/amaranth"
-ref = "v0.5.2"
-revision = "ba6a7495a6f0dad3db909fde8035170a859a5df4"
+ref = "v0.5.3"
+revision = "3857822b714b9a1e2efee62d7c19841c0818aa79"
 summary = "Amaranth hardware definition language"
 dependencies = [
     "Jinja2~=3.0",
@@ -27,14 +27,14 @@ dependencies = [
 
 [[package]]
 name = "amaranth-boards"
-version = "0.1.dev250"
-requires_python = "~=3.8"
+version = "0.1.dev252"
+requires_python = "~=3.9"
 git = "https://github.com/amaranth-lang/amaranth-boards"
-ref = "19b97324ecf9111c5d16377af79f82aad761c476"
-revision = "19b97324ecf9111c5d16377af79f82aad761c476"
+ref = "23c66d68045831de0a372c8c237274d74c71ef4e"
+revision = "23c66d68045831de0a372c8c237274d74c71ef4e"
 summary = "Board and connector definitions for Amaranth HDL"
 dependencies = [
-    "amaranth<0.7,>=0.4",
+    "amaranth<0.7,>=0.5",
 ]
 
 [[package]]
@@ -52,15 +52,15 @@ files = [
 
 [[package]]
 name = "amaranth"
-version = "0.5.2"
+version = "0.5.3"
 extras = ["builtin-yosys"]
 requires_python = "~=3.8"
 git = "https://github.com/amaranth-lang/amaranth"
-ref = "v0.5.2"
-revision = "ba6a7495a6f0dad3db909fde8035170a859a5df4"
+ref = "v0.5.3"
+revision = "3857822b714b9a1e2efee62d7c19841c0818aa79"
 summary = "Amaranth hardware definition language"
 dependencies = [
-    "amaranth @ git+https://github.com/amaranth-lang/amaranth@v0.5.2",
+    "amaranth @ git+https://github.com/amaranth-lang/amaranth@v0.5.3",
     "amaranth-yosys>=0.40",
 ]
 
@@ -179,6 +179,7 @@ extras = ["filecache"]
 requires_python = ">=3.7"
 summary = "httplib2 caching for requests"
 dependencies = [
+    "cachecontrol==0.13.1",
     "cachecontrol==0.13.1",
     "cachecontrol==0.13.1",
     "cachecontrol==0.13.1",
