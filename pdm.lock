@@ -5,18 +5,18 @@
 groups = ["default", "build", "ci", "lint", "scripting"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:b3bf7e5774ec1eea2895fa432deefadf47b000737e7296859e99b47f307e2b7b"
+content_hash = "sha256:b77f99127e1b223603f2d53f764709429e5941b2d8f88fbc6f28309889369284"
 
 [[metadata.targets]]
 requires_python = ">=3.9"
 
 [[package]]
 name = "amaranth"
-version = "0.5.0"
+version = "0.5.1"
 requires_python = "~=3.8"
 git = "https://github.com/amaranth-lang/amaranth"
-ref = "v0.5.0"
-revision = "a0750b89c6060d9f809159a012a26cff4e22e69d"
+ref = "v0.5.1"
+revision = "212cb2c57c191ef7442a9cb5ded39b6a07278ccd"
 summary = "Amaranth hardware definition language"
 dependencies = [
     "Jinja2~=3.0",
@@ -27,14 +27,14 @@ dependencies = [
 
 [[package]]
 name = "amaranth-boards"
-version = "0.1.dev246"
+version = "0.1.dev250"
 requires_python = "~=3.8"
 git = "https://github.com/amaranth-lang/amaranth-boards"
-ref = "aba2300dc83216523e1c98fdb22471cb4bac5027"
-revision = "aba2300dc83216523e1c98fdb22471cb4bac5027"
+ref = "19b97324ecf9111c5d16377af79f82aad761c476"
+revision = "19b97324ecf9111c5d16377af79f82aad761c476"
 summary = "Board and connector definitions for Amaranth HDL"
 dependencies = [
-    "amaranth<0.6,>=0.4",
+    "amaranth<0.7,>=0.4",
 ]
 
 [[package]]
@@ -52,15 +52,15 @@ files = [
 
 [[package]]
 name = "amaranth"
-version = "0.5.0"
+version = "0.5.1"
 extras = ["builtin-yosys"]
 requires_python = "~=3.8"
 git = "https://github.com/amaranth-lang/amaranth"
-ref = "v0.5.0"
-revision = "a0750b89c6060d9f809159a012a26cff4e22e69d"
+ref = "v0.5.1"
+revision = "212cb2c57c191ef7442a9cb5ded39b6a07278ccd"
 summary = "Amaranth hardware definition language"
 dependencies = [
-    "amaranth @ git+https://github.com/amaranth-lang/amaranth@v0.5.0",
+    "amaranth @ git+https://github.com/amaranth-lang/amaranth@v0.5.1",
     "amaranth-yosys>=0.40",
 ]
 
@@ -179,6 +179,7 @@ extras = ["filecache"]
 requires_python = ">=3.7"
 summary = "httplib2 caching for requests"
 dependencies = [
+    "cachecontrol==0.13.1",
     "cachecontrol==0.13.1",
     "cachecontrol==0.13.1",
     "cachecontrol==0.13.1",
