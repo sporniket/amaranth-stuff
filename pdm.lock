@@ -5,10 +5,10 @@
 groups = ["default", "build", "ci", "lint", "scripting"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:cc3171940c1fada7d8480bb3aa4e3d8e6065cbc97095f4cee1a4836f90d526bf"
+content_hash = "sha256:c9db2fdb5166af5617cf3500d265f95c0b9f44c5a8001d425fa13ea4b49f66d7"
 
 [[metadata.targets]]
-requires_python = ">=3.9"
+requires_python = ">=3.10"
 
 [[package]]
 name = "amaranth"
@@ -60,6 +60,7 @@ ref = "v0.5.6"
 revision = "eb8645fcc8b2dc0d348e8d53692f97e2b8e57836"
 summary = "Amaranth hardware definition language"
 dependencies = [
+    "amaranth @ git+https://github.com/amaranth-lang/amaranth@eb8645fcc8b2dc0d348e8d53692f97e2b8e57836",
     "amaranth @ git+https://github.com/amaranth-lang/amaranth@eb8645fcc8b2dc0d348e8d53692f97e2b8e57836",
     "amaranth @ git+https://github.com/amaranth-lang/amaranth@eb8645fcc8b2dc0d348e8d53692f97e2b8e57836",
     "amaranth @ git+https://github.com/amaranth-lang/amaranth@eb8645fcc8b2dc0d348e8d53692f97e2b8e57836",
@@ -550,6 +551,7 @@ extras = ["socks"]
 requires_python = ">=3.8"
 summary = "The next generation HTTP client."
 dependencies = [
+    "httpx==0.28.1",
     "httpx==0.28.1",
     "socksio==1.*",
 ]

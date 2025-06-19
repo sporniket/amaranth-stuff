@@ -13,15 +13,15 @@ name = "amaranth-stuff-by-sporniket"
 version = "0.0.5"
 description = "A curated collection of code written using the amaranth hdl"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 keywords = ["amaranth","amaranth-hdl","nmigen", "hdl", "fpga"]
 license = {text = "LGPLv3+"}
 authors = [{name="Sporniket", email="sporniket.studio@gmail.com"}]
 classifiers = [
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     "Operating System :: OS Independent",
     "Development Status :: 3 - Alpha",

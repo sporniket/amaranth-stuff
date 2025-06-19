@@ -40,7 +40,7 @@ Content
 
 **Amaranth stuff by Sporniket** requires a set of tools to work :
 
-* **Python 3.9 or 3.10, pip and pdm**.
+* **Python 3.10 or later, pip and pdm**.
 
 * Amaranth main libraries.
   * [amaranth](https://github.com/amaranth-lang/amaranth).
@@ -56,11 +56,17 @@ Content
 
 > It is expected that a compatible version of python is used
 
-In your project descriptor (`pyproject.toml` file), add a dependency pointing to this repository, optionnally with a specific hash (better for build stability, requires manual updating), e.g.
+In your project descriptor (`pyproject.toml` file), add a dependency pointing to this repository, optionnally with a specific tag (better for build stability, requires manual updating), e.g.
+
+    'amaranth-stuff-by-sporniket @ git+https://github.com/sporniket/amaranth-stuff@v0.0.4',
+
+You MAY specify a commit hash instead (e.g. latest before a change breaking your project), e.g.
 
     'amaranth-stuff-by-sporniket @ git+https://github.com/sporniket/amaranth-stuff@a738ace61839390dfdaa8ef06baa17d32482d771',
 
-A build tool like [pdm](https://pdm.fming.dev) can be used to manage dependencies in a normalized manner.
+A build tool like [pdm](https://pdm.fming.dev) can be used to manage dependencies in a normalized manner. 
+After updating the dependency specification in the pyproject.toml, use `pdm update amaranth-stuff-by-sporniket`.
+You MAY need to use `pdm update amaranth` and `pdm update amaranth-boards` afterwards.
 
 ### Working on the sources
 
