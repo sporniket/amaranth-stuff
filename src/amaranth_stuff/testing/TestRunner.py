@@ -15,7 +15,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along with Sporniket's "Amaranth Stuff" project.
-If not, see <https://www.gnu.org/licenses/>. 
+If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
@@ -146,7 +146,7 @@ class TestRunner:
                         "smtbmc",
                         "",
                         "[script]",
-                        f"read_ilang {ilName}",
+                        f"read_rtlil {ilName}",
                         "prep -top top",
                         "",
                         "[files]",
