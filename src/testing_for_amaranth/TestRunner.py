@@ -29,7 +29,7 @@ import shutil
 from pathlib import Path
 
 ### amaranth -- main deps
-from amaranth import ClockDomain, Elaboratable, Fragment, Module, Signal
+from amaranth.hdl import ClockDomain, Elaboratable, Fragment, Module, Signal
 from amaranth.build import Platform
 
 ### amaranth -- testing

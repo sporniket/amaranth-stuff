@@ -23,7 +23,7 @@ If not, see <https://www.gnu.org/licenses/>.
 from typing import List  # , Dict, Tuple, Optional
 
 ### amaranth -- main deps
-from amaranth import Cat, Elaboratable, Module, Mux, Signal, signed
+from amaranth.hdl import Cat, Elaboratable, Module, Mux, Signal, signed
 from amaranth.build import Platform
 
 

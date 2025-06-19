@@ -19,11 +19,8 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-### builtin deps
-from typing import List  # , Dict, Tuple, Optional
-
 ### amaranth -- main deps
-from amaranth import Elaboratable, Module, Signal
+from amaranth.hdl import Elaboratable, Module, Signal
 from amaranth.build import Platform
 
 
@@ -38,7 +35,7 @@ class Logger(Elaboratable):
     def ports(self):
         return self.logs
 
-    def elaborate(self, platform):
+    def elaborate(self, platform: Platform):
         m = Module()
 
         m.d.sync += self.logs[0].eq(self.source)

@@ -24,7 +24,7 @@ from subprocess import CalledProcessError
 from typing import List
 
 ### amaranth -- main deps
-from amaranth import ClockDomain, Elaboratable, Module, Signal
+from amaranth.hdl import ClockDomain, Elaboratable, Module, Signal
 from amaranth.build import Platform
 
 ### amaranth -- test deps

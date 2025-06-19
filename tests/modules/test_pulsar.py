@@ -19,15 +19,9 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-### amaranth -- main deps
-from amaranth import ClockDomain, Module, Signal, unsigned
-
-### amaranth -- test deps
-from amaranth.hdl import Assert
-
 ### amarant-stuff deps
 from amaranth_stuff.modules import Pulsar
-from testing_for_amaranth import TestRunner, Story, TestSuiteRunner
+from testing_for_amaranth import Story, TestSuiteRunner
 
 
 def test_Pulsar():

@@ -20,10 +20,7 @@ If not, see <https://www.gnu.org/licenses/>.
 """
 
 ### amaranth -- main deps
-from amaranth import ClockDomain, Module, Signal, unsigned
-
-### amaranth -- test deps
-from amaranth.hdl import Assert
+from amaranth.hdl import Signal, unsigned
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import ShiftRegisterSendLsbFirst

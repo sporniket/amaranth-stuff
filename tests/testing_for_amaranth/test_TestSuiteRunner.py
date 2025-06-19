@@ -19,18 +19,11 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-import inspect
-import os
-import pytest
-from subprocess import CalledProcessError
 from typing import List
 
 ### amaranth -- main deps
-from amaranth import ClockDomain, Elaboratable, Module, Signal
+from amaranth.hdl import Elaboratable, Module, Signal
 from amaranth.build import Platform
-
-### amaranth -- test deps
-from amaranth.hdl import Assert
 
 ### amarant-stuff deps
 from testing_for_amaranth.TestBench import Story, TestBench
@@ -39,7 +32,6 @@ from testing_for_amaranth import TestSuiteRunner
 ### utils for testing
 from .assert_TestRunnerDidWork import (
     thenTestRunnerDidWorkedAsExpectedWithSuccess,
-    thenTestRunnerDidWorkedAsExpectedWithFailure,
 )
 
 

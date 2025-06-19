@@ -19,11 +19,8 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-import pytest
-from subprocess import CalledProcessError
-
 ### amaranth -- main deps
-from amaranth import ClockDomain, Module, Signal, signed
+from amaranth.hdl import ClockDomain, Module, Signal, signed
 
 ### amaranth -- test deps
 from amaranth.hdl import Assert

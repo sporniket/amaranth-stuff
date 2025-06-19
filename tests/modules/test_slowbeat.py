@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>.
 """
 
 ### amaranth -- main deps
-from amaranth import ClockDomain, Module
+from amaranth.hdl import ClockDomain, Module
 from amaranth.build import Platform
 
 ### amaranth -- test deps

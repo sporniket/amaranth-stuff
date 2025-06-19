@@ -19,14 +19,12 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-import inspect
-import os
 import pytest
 from subprocess import CalledProcessError
 from typing import List
 
 ### amaranth -- main deps
-from amaranth import ClockDomain, Elaboratable, Module, Signal
+from amaranth.hdl import Elaboratable, Module, Signal
 from amaranth.build import Platform
 
 ### amarant-stuff deps
