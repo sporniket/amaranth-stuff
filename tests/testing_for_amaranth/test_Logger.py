@@ -29,8 +29,8 @@ from amaranth import ClockDomain, Module, Signal, signed
 from amaranth.hdl import Assert
 
 ### amarant-stuff deps
-from amaranth_stuff.testing.Logger import Logger
-from amaranth_stuff.testing import TestRunner
+from testing_for_amaranth.Logger import Logger
+from testing_for_amaranth import TestRunner
 
 
 ###

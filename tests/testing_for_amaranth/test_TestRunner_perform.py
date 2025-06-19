@@ -35,7 +35,7 @@ from amaranth.build import Platform
 from amaranth.hdl import Assert
 
 ### amarant-stuff deps
-from amaranth_stuff.testing import TestRunner, Story
+from testing_for_amaranth import TestRunner, Story
 from amaranth_stuff.modules import Sequencer, RippleCounter
 
 

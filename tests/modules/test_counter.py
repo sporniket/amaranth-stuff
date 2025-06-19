@@ -21,7 +21,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import RippleCounter
-from amaranth_stuff.testing import TestRunner, Story, TestSuiteRunner
+from testing_for_amaranth import TestRunner, Story, TestSuiteRunner
 
 ###
 ### Test suite on RippleCounter

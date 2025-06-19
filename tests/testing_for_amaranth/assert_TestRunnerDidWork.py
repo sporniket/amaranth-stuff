@@ -23,16 +23,30 @@ import inspect
 import os
 
 
-def _thenFormalVerificationDidHappenSuccessfully(path):
+def _isExistingDirectory(path):
     assert os.path.exists(path)
     assert os.path.isdir(path)
-    assert os.path.exists(os.path.join(path, "PASS"))
+
+
+def _isExistingFile(path):
+    assert os.path.exists(path)
+    assert os.path.isfile(path)
+
+
+def _thenFormalVerificationDidHappen(path):
+    _isExistingDirectory(path)
+    _isExistingFile(f"{path}.il")
+    _isExistingFile(f"{path}.sby")
+
+
+def _thenFormalVerificationDidHappenSuccessfully(path):
+    _thenFormalVerificationDidHappen(path)
+    _isExistingFile(os.path.join(path, "PASS"))
 
 
 def _thenFormalVerificationDidHappenWithFailure(path):
-    assert os.path.exists(path)
-    assert os.path.isdir(path)
-    assert os.path.exists(os.path.join(path, "FAIL"))
+    _thenFormalVerificationDidHappen(path)
+    _isExistingFile(os.path.join(path, "FAIL"))
 
 
 def thenTestRunnerDidWorkedAsExpectedWithSuccess(storyName: str):

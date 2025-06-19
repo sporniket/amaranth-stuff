@@ -29,12 +29,8 @@ from typing import List
 from amaranth import ClockDomain, Elaboratable, Module, Signal
 from amaranth.build import Platform
 
-### amaranth -- test deps
-from amaranth.hdl import Assert
-
 ### amarant-stuff deps
-from amaranth_stuff.testing.TestBench import Story, TestBench
-from amaranth_stuff.testing import TestSuiteRunner
+from testing_for_amaranth import TestRunner, Story
 
 ### utils for testing
 from .assert_TestRunnerDidWork import (
@@ -44,11 +40,11 @@ from .assert_TestRunnerDidWork import (
 
 
 ###
-### Test suite on TestSuiteRunner -- run
+### Test suite on TestRunner -- run
 ###
 
 
-def test_TestSuiteRunner_run__should_run_for_each_stories():
+def test_TestRunner_run__should_verify_reachability_and_behaviour():
     class DummyCounter(Elaboratable):
         def __init__(self, width):
             self.out = Signal(width)
@@ -68,32 +64,56 @@ def test_TestSuiteRunner_run__should_run_for_each_stories():
 
             return m
 
-    TestSuiteRunner(
+    TestRunner(
         lambda: DummyCounter(2),
         lambda dut, clockDomain: {
             "rst": dut.reset,
             "cs": dut.chipSelect,
             "out": dut.out,
         },
-        [
-            Story(
-                "nominal",
-                {"rst": [1, 0, 0], "cs": [1, 1, 1], "out": [2]},
-                given=["rst", "cs"],
-            ),
-            Story(
-                "cycle",
-                {"rst": [1, 0, 0, 0, 0], "cs": [1, 1, 1, 1, 1], "out": [0]},
-                given=["rst", "cs"],
-            ),
-            Story(
-                "reset happens",
-                {"rst": [1, 0, 0, 1, 0], "cs": [1, 1, 1, 1, 1], "out": [1]},
-                given=["rst", "cs"],
-            ),
-        ],
+        Story(
+            "nominal",
+            {"rst": [1, 0, 0], "cs": [1, 1, 1], "out": [2]},
+            given=["rst", "cs"],
+        ),
     ).run()
 
     thenTestRunnerDidWorkedAsExpectedWithSuccess("nominal")
-    thenTestRunnerDidWorkedAsExpectedWithSuccess("cycle")
-    thenTestRunnerDidWorkedAsExpectedWithSuccess("reset_happens")
+
+
+def test_TestRunner_run__should_fail_when_logic_is_wrong():
+    class DummyCounter(Elaboratable):
+        def __init__(self, width):
+            self.out = Signal(width)
+            self.chipSelect = Signal()
+            self.reset = Signal()
+
+        def ports(self) -> List[Signal]:
+            return [self.reset, self.chipSelect, self.out]
+
+        def elaborate(self, platform: Platform) -> Module:
+            m = Module()
+
+            with m.If(self.reset):
+                m.d.sync += self.out.eq(0)
+            with m.Elif(self.chipSelect):
+                m.d.sync += self.out.eq((self.out + 1)[0:2])
+
+            return m
+
+    with pytest.raises(CalledProcessError):
+        TestRunner(
+            lambda: DummyCounter(2),
+            lambda dut, clockDomain: {
+                "rst": dut.reset,
+                "cs": dut.chipSelect,
+                "out": dut.out,
+            },
+            Story(
+                "nominal",
+                {"rst": [1, 0, 0], "cs": [1, 1, 1], "out": [1]},
+                given=["rst", "cs"],
+            ),
+        ).run()
+
+    thenTestRunnerDidWorkedAsExpectedWithFailure("nominal")

@@ -27,7 +27,7 @@ from amaranth.hdl import Assert
 
 ### amarant-stuff deps
 from amaranth_stuff.modules import Sequencer
-from amaranth_stuff.testing import TestRunner, Story, TestSuiteRunner
+from testing_for_amaranth import TestRunner, Story, TestSuiteRunner
 
 ###
 ### Test suite on Sequencer

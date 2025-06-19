@@ -31,8 +31,8 @@ from amaranth.build import Platform
 from amaranth.hdl import Assert
 
 ### amarant-stuff deps
-from amaranth_stuff.testing.TestBench import Story, TestBench
-from amaranth_stuff.testing import TestRunner
+from testing_for_amaranth.TestBench import Story, TestBench
+from testing_for_amaranth import TestRunner
 
 
 ###

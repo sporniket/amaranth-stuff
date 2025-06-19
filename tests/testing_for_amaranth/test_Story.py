@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>.
 """
 
 ### amarant-stuff deps
-from amaranth_stuff.testing import Story
+from testing_for_amaranth import Story
 
 
 def test_Story_includes_all_participant_as_given_if_not_specified():
