@@ -19,9 +19,6 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-### builtin deps
-from typing import List  # , Dict, Tuple, Optional
-
 ### amaranth -- main deps
 from amaranth.build import Platform
 from amaranth.lib.wiring import In, Out, Signature

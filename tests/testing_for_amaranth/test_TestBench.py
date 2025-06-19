@@ -21,7 +21,6 @@ If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 from subprocess import CalledProcessError
-from typing import List
 
 ### amaranth -- main deps
 from amaranth.hdl import ClockDomain, Elaboratable, Module, Signal
@@ -117,7 +116,7 @@ def test_testBench_provide_helper_to_test_stories():
             self.chipSelect = Signal()
             self.reset = Signal()
 
-        def ports(self) -> List[Signal]:
+        def ports(self) -> list[Signal]:
             return [self.reset, self.chipSelect, self.out]
 
         def elaborate(self, platform: Platform) -> Module:
@@ -172,7 +171,7 @@ def test_testBench_provide_helper_to_verify_the_content_of_a_logger():
             self.dataIn = Signal()
             self.dataOut = Signal()
 
-        def ports(self) -> List[Signal]:
+        def ports(self) -> list[Signal]:
             return [self.dataIn, self.dataOut]
 
         def elaborate(self, platform: Platform) -> Module:
@@ -211,7 +210,7 @@ def test_testBench_provide_helper_to_verify_the_content_of_a_logger_and_the_curr
             self.dataIn = Signal()
             self.dataOut = Signal()
 
-        def ports(self) -> List[Signal]:
+        def ports(self) -> list[Signal]:
             return [self.dataIn, self.dataOut]
 
         def elaborate(self, platform: Platform) -> Module:

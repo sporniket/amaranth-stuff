@@ -19,9 +19,6 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-### builtin deps
-from typing import List  # , Dict, Tuple, Optional
-
 ### amaranth -- main deps
 from amaranth.hdl import Elaboratable, Module, Mux, Signal
 from amaranth.build import Platform
@@ -38,7 +35,7 @@ class Decoder(Elaboratable):
         self.output = Signal(span, init=1)
         self.outOfRange = Signal()
 
-    def ports(self) -> List[Signal]:
+    def ports(self) -> list[Signal]:
         return [self.input, self.output, self.outOfRange]
 
     def elaborate(self, platform: Platform) -> Module:

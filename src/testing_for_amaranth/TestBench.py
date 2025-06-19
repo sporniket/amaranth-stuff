@@ -19,9 +19,6 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-### builtin deps
-from typing import List  # , Dict, Tuple, Optional
-
 ### amaranth -- main deps
 from amaranth.hdl import Elaboratable, Module, Signal
 from amaranth.build import Platform
@@ -71,7 +68,7 @@ class TestBench(Elaboratable):
         self._loggers = {}
         self.requiredDepth = 0
 
-    def ports(self) -> List[Signal]:
+    def ports(self) -> list[Signal]:
         return self._ports
 
     def elaborate(self, platform: Platform) -> Module:
@@ -122,14 +119,14 @@ class TestBench(Elaboratable):
     def _buildAssertList(self, logger: Logger, history):
         return [Assert(logger.logs[i] == history[i]) for i in range(0, len(history))]
 
-    def verifyLogs(self, participantName: str, logs: List) -> List:
+    def verifyLogs(self, participantName: str, logs: list) -> list:
         """
         ```
         Build a list of statements to verify the content of the named logger.
 
         ## Args:
         *    `participantName` (str): the participant name, referenced when calling `givenStoryBook(...)`
-        *    `logs` (List): the list of values, in chronological order, the last element is compared to `logger.logs[0]`
+        *    `logs` (list): the list of values, in chronological order, the last element is compared to `logger.logs[0]`
 
         ## Raises:
         *    `KeyError`: the participant name is not found.
@@ -146,14 +143,14 @@ class TestBench(Elaboratable):
         print(f"* history = {history}")
         return self._buildAssertList(logger, history)
 
-    def verifyLogsAndNow(self, participantName: str, logs: List) -> List:
+    def verifyLogsAndNow(self, participantName: str, logs: list) -> list:
         """
         ```
         Build a list of statements to verify the content of the named logger.
 
         ## Args:
         *    `participantName` (str): the participant name, referenced when calling `givenStoryBook(...)`
-        *    `logs` (List): the list of values, in chronological order, the last element is compared to `logger.source`, the
+        *    `logs` (list): the list of values, in chronological order, the last element is compared to `logger.source`, the
              previous element is compared to `logger.logs[0]`.
 
         ## Raises:
@@ -173,6 +170,6 @@ class TestBench(Elaboratable):
             logger, history[1:]
         )
 
-    def fail(self, participantName: str) -> List:
+    def fail(self, participantName: str) -> list:
         logger = self._loggers[participantName]
         return [Assert(logger.source != logger.source)]

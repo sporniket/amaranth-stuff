@@ -19,9 +19,6 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-### builtin deps
-from typing import List  # , Dict, Tuple, Optional
-
 ### amaranth -- main deps
 from amaranth.hdl import Cat, Elaboratable, Module, Signal, Const
 from amaranth.build import Platform
@@ -37,7 +34,7 @@ class ShiftRegisterSendLsbFirst(Elaboratable):
         self._state = Signal(dataIn.shape(), init=(1 << (len(dataIn) - 1)))
         self._delay = Signal(Const(delay).shape(), init=delay)
 
-    def ports(self) -> List[Signal]:
+    def ports(self) -> list[Signal]:
         return [self.dataIn, self.load, self.dataOutInverted, self.dataOut]
 
     def elaborate(self, platform: Platform) -> Module:

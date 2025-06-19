@@ -19,16 +19,13 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-### builtin deps
-from typing import List  # , Dict, Tuple, Optional
-
 ### amaranth -- main deps
 from amaranth.hdl import Elaboratable, Module, Signal
 from amaranth.build import Platform
 
 
 class Sequencer(Elaboratable):
-    def __init__(self, program: List[int]):
+    def __init__(self, program: list[int]):
         for step in program:
             if step == 0:
                 raise ValueError("A step MUST have a duration of at least one cycle !")
@@ -41,7 +38,7 @@ class Sequencer(Elaboratable):
         ]
         self.reset = Signal(init=1)  # synchronous reset
 
-    def ports(self) -> List[Signal]:
+    def ports(self) -> list[Signal]:
         return [self.steps]
 
     def elaborate(self, platform: Platform) -> Module:

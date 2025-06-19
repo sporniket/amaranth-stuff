@@ -19,9 +19,6 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-### builtin deps
-from typing import List  # , Dict, Tuple, Optional
-
 ### amaranth -- main deps
 from amaranth.hdl import Cat, Elaboratable, Module, Mux, Signal, signed
 from amaranth.build import Platform
@@ -88,7 +85,7 @@ class DviTmdsEncoder(Elaboratable):
         self.ctl1 = ctl1
         self.halfBalanceCounter = Signal(signed(4))
 
-    def ports(self) -> List[Signal]:
+    def ports(self) -> list[Signal]:
         return [
             self.dataIn,
             self.videoDisplayEnable,

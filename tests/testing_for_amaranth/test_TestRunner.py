@@ -21,7 +21,6 @@ If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 from subprocess import CalledProcessError
-from typing import List
 
 ### amaranth -- main deps
 from amaranth.hdl import Elaboratable, Module, Signal
@@ -49,7 +48,7 @@ def test_TestRunner_run__should_verify_reachability_and_behaviour():
             self.chipSelect = Signal()
             self.reset = Signal()
 
-        def ports(self) -> List[Signal]:
+        def ports(self) -> list[Signal]:
             return [self.reset, self.chipSelect, self.out]
 
         def elaborate(self, platform: Platform) -> Module:
@@ -86,7 +85,7 @@ def test_TestRunner_run__should_fail_when_logic_is_wrong():
             self.chipSelect = Signal()
             self.reset = Signal()
 
-        def ports(self) -> List[Signal]:
+        def ports(self) -> list[Signal]:
             return [self.reset, self.chipSelect, self.out]
 
         def elaborate(self, platform: Platform) -> Module:

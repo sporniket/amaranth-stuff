@@ -19,8 +19,6 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-from typing import List
-
 ### amaranth -- main deps
 from amaranth.hdl import Elaboratable, Module, Signal
 from amaranth.build import Platform
@@ -47,7 +45,7 @@ def test_TestSuiteRunner_run__should_run_for_each_stories():
             self.chipSelect = Signal()
             self.reset = Signal()
 
-        def ports(self) -> List[Signal]:
+        def ports(self) -> list[Signal]:
             return [self.reset, self.chipSelect, self.out]
 
         def elaborate(self, platform: Platform) -> Module:

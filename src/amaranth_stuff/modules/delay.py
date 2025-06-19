@@ -19,9 +19,6 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-### builtin deps
-from typing import List  # , Dict, Tuple, Optional
-
 ### amaranth -- main deps
 from amaranth.hdl import Elaboratable, Module, Signal
 from amaranth.build import Platform
@@ -35,7 +32,7 @@ class Delay(Elaboratable):
         self.dataOut = Signal()
         self.dataOutInverted = Signal(init=1)
 
-    def ports(self) -> List[Signal]:
+    def ports(self) -> list[Signal]:
         return [self.delay, self.dataOut, self.dataOutInverted]
 
     def elaborate(self, platform: Platform) -> Module:

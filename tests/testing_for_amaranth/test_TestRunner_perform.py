@@ -21,11 +21,8 @@ If not, see <https://www.gnu.org/licenses/>.
 
 ### builtin deps
 import os
-from os.path import exists
-from pathlib import Path
 import pytest
 from subprocess import CalledProcessError
-from typing import List  # , Dict, Tuple, Optional
 
 ### amaranth -- main deps
 from amaranth.hdl import ClockDomain, Elaboratable, Module, Signal
@@ -49,7 +46,7 @@ class DummyModule(Elaboratable):
         self.output = Signal()
         self.complement = Signal(init=1)
 
-    def ports(self) -> List[Signal]:
+    def ports(self) -> list[Signal]:
         return [self.input, self.output, self.complement]
 
     def elaborate(self, platform: Platform) -> Module:
@@ -84,10 +81,14 @@ def test_perform_shouldFailMiserably():
     with pytest.raises(CalledProcessError):
         TestRunner.perform(DummyModule(), testBody)
 
-    assert os.path.exists(Path("build-tests", "test_perform_shouldFailMiserably.il"))
-    assert os.path.exists(Path("build-tests", "test_perform_shouldFailMiserably.sby"))
     assert os.path.exists(
-        Path("build-tests", "test_perform_shouldFailMiserably", "FAIL")
+        os.path.join("build-tests", "test_perform_shouldFailMiserably.il")
+    )
+    assert os.path.exists(
+        os.path.join("build-tests", "test_perform_shouldFailMiserably.sby")
+    )
+    assert os.path.exists(
+        os.path.join("build-tests", "test_perform_shouldFailMiserably", "FAIL")
     )
 
 
@@ -117,19 +118,19 @@ def test_perform_should_combine_test_name_and_provided_description():
         TestRunner.perform(DummyModule(), testBody, description="foo")
 
     assert os.path.exists(
-        Path(
+        os.path.join(
             "build-tests",
             "test_perform_should_combine_test_name_and_provided_description__foo.il",
         )
     )
     assert os.path.exists(
-        Path(
+        os.path.join(
             "build-tests",
             "test_perform_should_combine_test_name_and_provided_description__foo.sby",
         )
     )
     assert os.path.exists(
-        Path(
+        os.path.join(
             "build-tests",
             "test_perform_should_combine_test_name_and_provided_description__foo",
             "FAIL",
@@ -193,13 +194,13 @@ def test_perform_should_fail_flawed_long_test():
         TestRunner.perform(Sequencer([18, 3, 4, 1]), testBody)
 
     assert os.path.exists(
-        Path("build-tests", "test_perform_should_fail_flawed_long_test.il")
+        os.path.join("build-tests", "test_perform_should_fail_flawed_long_test.il")
     )
     assert os.path.exists(
-        Path("build-tests", "test_perform_should_fail_flawed_long_test.sby")
+        os.path.join("build-tests", "test_perform_should_fail_flawed_long_test.sby")
     )
     assert os.path.exists(
-        Path("build-tests", "test_perform_should_fail_flawed_long_test", "FAIL")
+        os.path.join("build-tests", "test_perform_should_fail_flawed_long_test", "FAIL")
     )
 
 
@@ -247,19 +248,19 @@ def test_perform_should_provide_a_correct_reset_signal():
         TestRunner.perform(RippleCounter(3), verifyStory, description="verify story")
 
     assert os.path.exists(
-        Path(
+        os.path.join(
             "build-tests",
             "test_perform_should_provide_a_correct_reset_signal__verify_story.il",
         )
     )
     assert os.path.exists(
-        Path(
+        os.path.join(
             "build-tests",
             "test_perform_should_provide_a_correct_reset_signal__verify_story.sby",
         )
     )
     assert os.path.exists(
-        Path(
+        os.path.join(
             "build-tests",
             "test_perform_should_provide_a_correct_reset_signal__verify_story",
             "FAIL",
@@ -268,19 +269,19 @@ def test_perform_should_provide_a_correct_reset_signal():
 
     TestRunner.perform(RippleCounter(3), testBody, description="verify behaviour")
     assert os.path.exists(
-        Path(
+        os.path.join(
             "build-tests",
             "test_perform_should_provide_a_correct_reset_signal__verify_behaviour.il",
         )
     )
     assert os.path.exists(
-        Path(
+        os.path.join(
             "build-tests",
             "test_perform_should_provide_a_correct_reset_signal__verify_behaviour.sby",
         )
     )
     assert os.path.exists(
-        Path(
+        os.path.join(
             "build-tests",
             "test_perform_should_provide_a_correct_reset_signal__verify_behaviour",
             "PASS",
