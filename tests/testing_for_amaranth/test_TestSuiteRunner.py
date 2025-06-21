@@ -28,7 +28,7 @@ from testing_for_amaranth.TestBench import Story, TestBench
 from testing_for_amaranth import TestSuiteRunner
 
 ### utils for testing
-from .assert_TestRunnerDidWork import (
+from .assert_utils import (
     thenTestRunnerDidWorkedAsExpectedWithSuccess,
 )
 

@@ -38,6 +38,7 @@ from amaranth._toolchain import require_tool  # May need to be re-implemented lo
 
 ### internal
 from .TestBench import TestBench
+from .SymbiYosysHelper import SymbiYosysHelper
 
 
 IGNORED_FRAME_NAMES = ["run", "_runBehaviourTest", "_runReachabilityTest"]
@@ -133,29 +134,6 @@ class TestRunner:
         return safeName
 
     @staticmethod
-    def _generateSbyConfig(sbyName: str, ilName: str, depth: int):
-        with open(sbyName, "wt") as f:
-            f.write(
-                "\n".join(
-                    [
-                        "[options]",
-                        "mode bmc",
-                        f"depth {depth}",
-                        "",
-                        "[engines]",
-                        "smtbmc",
-                        "",
-                        "[script]",
-                        f"read_rtlil {ilName}",
-                        "prep -top top",
-                        "",
-                        "[files]",
-                        f"{ilName}",
-                    ]
-                )
-            )
-
-    @staticmethod
     def perform(
         dut: Elaboratable,
         test,
@@ -197,7 +175,9 @@ class TestRunner:
         print(f"Generating {ilName}...")
         requiredDepth = TestRunner._generateTestBench(ilName, dut, test, platform)
         print(f"Generating {sbyName}...")
-        TestRunner._generateSbyConfig(sbyName, ilName, max([depth, requiredDepth]))
+        SymbiYosysHelper(
+            baseName, depth=max([depth, requiredDepth])
+        ).writeScriptToReadRtlil()
 
         invoke_args = [require_tool("sby"), "-f", sbyName]
         print(f"Running {' '.join(invoke_args)}...")

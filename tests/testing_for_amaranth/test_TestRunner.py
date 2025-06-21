@@ -30,7 +30,7 @@ from amaranth.build import Platform
 from testing_for_amaranth import TestRunner, Story
 
 ### utils for testing
-from .assert_TestRunnerDidWork import (
+from .assert_utils import (
     thenTestRunnerDidWorkedAsExpectedWithSuccess,
     thenTestRunnerDidWorkedAsExpectedWithFailure,
 )

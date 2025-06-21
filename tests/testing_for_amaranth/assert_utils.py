@@ -23,30 +23,53 @@ import inspect
 import os
 
 
-def _isExistingDirectory(path):
+def _thenIsExistingDirectory(path):
     assert os.path.exists(path)
     assert os.path.isdir(path)
 
 
-def _isExistingFile(path):
+def thenIsExistingFile(path):
     assert os.path.exists(path)
     assert os.path.isfile(path)
 
 
+def thenSbyScriptContainsExpectedContent(path):
+    basename = os.path.basename(path)
+    with open(f"{path}.sby") as f:
+        actual = f.read()
+        assert (
+            actual
+            == f"""[options]
+mode bmc
+depth 20
+
+[engines]
+smtbmc
+
+[script]
+read_rtlil {basename}.il
+prep -top top
+
+[files]
+{basename}.il"""
+        )
+
+
 def _thenFormalVerificationDidHappen(path):
-    _isExistingDirectory(path)
-    _isExistingFile(f"{path}.il")
-    _isExistingFile(f"{path}.sby")
+    _thenIsExistingDirectory(path)
+    thenIsExistingFile(f"{path}.il")
+    thenIsExistingFile(f"{path}.sby")
+    thenSbyScriptContainsExpectedContent(path)
 
 
 def _thenFormalVerificationDidHappenSuccessfully(path):
     _thenFormalVerificationDidHappen(path)
-    _isExistingFile(os.path.join(path, "PASS"))
+    thenIsExistingFile(os.path.join(path, "PASS"))
 
 
 def _thenFormalVerificationDidHappenWithFailure(path):
     _thenFormalVerificationDidHappen(path)
-    _isExistingFile(os.path.join(path, "FAIL"))
+    thenIsExistingFile(os.path.join(path, "FAIL"))
 
 
 def thenTestRunnerDidWorkedAsExpectedWithSuccess(storyName: str):
