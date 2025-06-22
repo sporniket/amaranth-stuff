@@ -28,36 +28,7 @@ from amaranth.hdl import Assert
 
 ### local deps
 from .Logger import Logger
-
-
-class Story:
-    """A Story represents a set of sequences of values for each participants.
-
-    Each sequence is described from the oldest to the latest value. When the length of sequences are
-    not the same, the longest sequences are starting before to end simultaneously.
-    """
-
-    def __init__(self, title: str, content, *, given=None):
-        """Fully define a story
-
-        * title : string, a distinctive title
-        * content : a list of values by _participant_ name, e.g. {"a":[1,0,1], "b":[0,1,1]}
-        * given : OPTIONNAL, the list of participants whose content is _given_ ; content of other participants are _expected_ ;
-            when not specified, all participants are considered given.
-        """
-        self.title = title
-        self.content = content
-        if given is not None:
-            self.given = []
-            for p in given:
-                if p in content:
-                    self.given.append(p)
-        else:
-            self.given = [p for p in content]
-        self.expected = []
-        for p in content:
-            if p not in self.given:
-                self.expected.append(p)
+from .Story import Story
 
 
 class TestBench(Elaboratable):
@@ -77,14 +48,14 @@ class TestBench(Elaboratable):
             m.submodules[f"{l}_log"] = self._loggers[l]
         return m
 
-    def registerPort(self, signal):
+    def registerPort(self, signal: Signal):
         if signal.name == "$signal":
             signal.name = f"test_bench_{len(self._ports)}"
             print(f"register signal name : {signal.name}")
         self._ports.append(signal)
         return signal
 
-    def givenStoryBook(self, *, participants, stories):
+    def givenStoryBook(self, *, participants: dict[str, Signal], stories: list[Story]):
         self._stories = {story.title: story for story in stories}
         maxSize = max(
             [max([len(story.content[p]) for p in story.content]) for story in stories]
@@ -94,7 +65,7 @@ class TestBench(Elaboratable):
         self.requiredDepth = maxSize + 3
         self._loggers = {p: Logger(participants[p], maxSize - 1) for p in participants}
 
-    def matchesStory(self, storyName):
+    def matchesStory(self, storyName: str):
         if storyName not in self._stories:
             raise KeyError(f"Story '{storyName}' not found.")
         print(f"Building story matcher for '{storyName}'...")

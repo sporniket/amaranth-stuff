@@ -20,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>.
 """
 
 from .TestRunner import TestRunner
-from .TestBench import Story
+from .Story import Story
 from .TestSuiteRunner import TestSuiteRunner
 
 __all__ = ["TestRunner", "Story", "TestSuiteRunner"]
