@@ -61,7 +61,7 @@ _install = "python3 install.py"
 make = { composite = ["_build_only"] }
 make_install = { composite = ["_build_only","_install"] }
 # --- test & coverage ---
-_coverage_pytest = "python3 -m coverage run --source=amaranth_stuff --branch -m pytest"
+_coverage_pytest = "python3 -m coverage run --source=general_logic_for_amaranth,encoding_for_amaranth,testing_for_amaranth --branch -m pytest"
 _coverage_report = "python3 -m coverage report -m"
 _coverage_html = "python3 -m coverage html"
 _ci_only = { composite = ["_coverage_pytest","_coverage_report","_coverage_html"] }
