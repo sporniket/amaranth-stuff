@@ -18,3 +18,29 @@ You should have received a copy of the GNU Lesser General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 ---
 """
+
+### amarant-stuff deps
+from general_logic_for_amaranth import MonoImpulse
+from testing_for_amaranth import Story, TestSuiteRunner
+
+
+def test_MonoImpulse():
+    TestSuiteRunner(
+        lambda: MonoImpulse(),
+        lambda dut, clockDomain: {
+            "rst": clockDomain.rst,
+            "dout": dut.dataOut,
+            "doutinv": dut.dataOutInverted,
+        },
+        [
+            Story(
+                "Should pulse only once",
+                {
+                    "rst": [1] + [0, 0, 0, 0],
+                    "dout": [0] + [1, 0, 0, 0],
+                    "doutinv": [1] + [0, 1, 1, 1],
+                },
+                given=["rst"],
+            ),
+        ],
+    ).run()

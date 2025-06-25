@@ -19,34 +19,28 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
-### amaranth -- main deps
-from amaranth.hdl import Signal, unsigned
-
 ### amarant-stuff deps
-from amaranth_stuff.modules import ShiftRegisterSendLsbFirst
-from testing_for_amaranth import TestRunner, Story, TestSuiteRunner
+from general_logic_for_amaranth import Delay
+from testing_for_amaranth import Story, TestSuiteRunner
 
 
-def test_ShiftRegisterSendLsbFirst():
+def test_Delay():
     TestSuiteRunner(
-        lambda: ShiftRegisterSendLsbFirst(Signal(unsigned(4), name="dataIn"), 6),
+        lambda: Delay(5),
         lambda dut, clockDomain: {
             "rst": clockDomain.rst,
-            "load": dut.load,
-            "din": dut.dataIn,
             "dout": dut.dataOut,
-            "doutinv": dut.dataOutInverted,
+            "doutInv": dut.dataOutInverted,
         },
         [
             Story(
-                "Phase should delay first load",
+                f"should delay assertion",
                 {
-                    "rst": [1, 0, 0, 0] + [0, 0, 0, 0] + [0, 0, 0, 0] + [0],
-                    "din": [0, 0, 0, 0] + [0, 0, 0, 0] + [0b1011, 0, 0, 0] + [0],
-                    "load": [0, 0, 0, 0] + [0, 0, 0, 1] + [0, 0, 0, 1] + [0],
-                    "dout": [0, 0, 0, 0] + [0, 0, 0, 0] + [1, 1, 0, 1] + [0],
+                    "rst": [1, 0, 0, 0] + [0, 0, 0, 0],
+                    "dout": [0, 0, 0, 0] + [0, 0, 1, 1],
+                    "doutInv": [1, 1, 1, 1] + [1, 1, 0, 0],
                 },
-                given=["rst", "din"],
-            ),
+                given=["rst"],
+            )
         ],
     ).run()

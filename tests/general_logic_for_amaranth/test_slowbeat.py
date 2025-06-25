@@ -27,7 +27,7 @@ from amaranth.build import Platform
 from amaranth.hdl import Assert
 
 ### amarant-stuff deps
-from amaranth_stuff.modules import SlowBeat
+from general_logic_for_amaranth import SlowBeat
 from testing_for_amaranth import TestRunner, Story
 
 

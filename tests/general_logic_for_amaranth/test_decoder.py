@@ -20,27 +20,34 @@ If not, see <https://www.gnu.org/licenses/>.
 """
 
 ### amarant-stuff deps
-from amaranth_stuff.modules import Pulsar
+from general_logic_for_amaranth import Decoder
 from testing_for_amaranth import Story, TestSuiteRunner
 
 
-def test_Pulsar():
+def test_Decoder():
+    span = (1 << 2) - 1
+    # there is 1 invalid input for testing the error signal of decoder
     TestSuiteRunner(
-        lambda: Pulsar(3),
+        lambda: Decoder(span),
         lambda dut, clockDomain: {
             "rst": clockDomain.rst,
-            "dout": dut.dataOut,
-            "doutinv": dut.dataOutInverted,
+            "input": dut.input,
+            "output": dut.output,
+            "outOfRange": dut.outOfRange,
         },
         [
             Story(
-                "Should pulse regularly",
-                {
-                    "rst": [1] + [0, 0, 0, 0] + [0, 0, 0, 0],
-                    "dout": [0] + [1, 0, 0, 0] + [1, 0, 0, 0],
-                    "doutinv": [1] + [0, 1, 1, 1] + [0, 1, 1, 1],
-                },
-                given=["rst"],
-            ),
+                f"When input is {i}",
+                {"rst": [0], "input": [i], "output": [1 << i], "outOfRange": [0]},
+                given=["rst", "input"],
+            )
+            for i in range(0, span)
+        ]
+        + [
+            Story(
+                "When input is out of range",
+                {"rst": [0], "input": [span], "output": [0], "outOfRange": [1]},
+                given=["rst", "input"],
+            )
         ],
     ).run()

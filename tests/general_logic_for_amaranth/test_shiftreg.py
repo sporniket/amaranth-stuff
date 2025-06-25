@@ -19,28 +19,34 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
+### amaranth -- main deps
+from amaranth.hdl import Signal, unsigned
+
 ### amarant-stuff deps
-from amaranth_stuff.modules import MonoImpulse
-from testing_for_amaranth import Story, TestSuiteRunner
+from general_logic_for_amaranth import ShiftRegisterSendLsbFirst
+from testing_for_amaranth import TestRunner, Story, TestSuiteRunner
 
 
-def test_MonoImpulse():
+def test_ShiftRegisterSendLsbFirst():
     TestSuiteRunner(
-        lambda: MonoImpulse(),
+        lambda: ShiftRegisterSendLsbFirst(Signal(unsigned(4), name="dataIn"), 6),
         lambda dut, clockDomain: {
             "rst": clockDomain.rst,
+            "load": dut.load,
+            "din": dut.dataIn,
             "dout": dut.dataOut,
             "doutinv": dut.dataOutInverted,
         },
         [
             Story(
-                "Should pulse only once",
+                "Phase should delay first load",
                 {
-                    "rst": [1] + [0, 0, 0, 0],
-                    "dout": [0] + [1, 0, 0, 0],
-                    "doutinv": [1] + [0, 1, 1, 1],
+                    "rst": [1, 0, 0, 0] + [0, 0, 0, 0] + [0, 0, 0, 0] + [0],
+                    "din": [0, 0, 0, 0] + [0, 0, 0, 0] + [0b1011, 0, 0, 0] + [0],
+                    "load": [0, 0, 0, 0] + [0, 0, 0, 1] + [0, 0, 0, 1] + [0],
+                    "dout": [0, 0, 0, 0] + [0, 0, 0, 0] + [1, 1, 0, 1] + [0],
                 },
-                given=["rst"],
+                given=["rst", "din"],
             ),
         ],
     ).run()

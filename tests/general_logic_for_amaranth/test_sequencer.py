@@ -26,7 +26,7 @@ from amaranth.hdl import ClockDomain, Module
 from amaranth.hdl import Assert
 
 ### amarant-stuff deps
-from amaranth_stuff.modules import Sequencer
+from general_logic_for_amaranth import Sequencer
 from testing_for_amaranth import TestRunner, Story, TestSuiteRunner
 
 ###

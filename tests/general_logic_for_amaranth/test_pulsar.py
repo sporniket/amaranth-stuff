@@ -20,27 +20,27 @@ If not, see <https://www.gnu.org/licenses/>.
 """
 
 ### amarant-stuff deps
-from amaranth_stuff.modules import Delay
+from general_logic_for_amaranth import Pulsar
 from testing_for_amaranth import Story, TestSuiteRunner
 
 
-def test_Delay():
+def test_Pulsar():
     TestSuiteRunner(
-        lambda: Delay(5),
+        lambda: Pulsar(3),
         lambda dut, clockDomain: {
             "rst": clockDomain.rst,
             "dout": dut.dataOut,
-            "doutInv": dut.dataOutInverted,
+            "doutinv": dut.dataOutInverted,
         },
         [
             Story(
-                f"should delay assertion",
+                "Should pulse regularly",
                 {
-                    "rst": [1, 0, 0, 0] + [0, 0, 0, 0],
-                    "dout": [0, 0, 0, 0] + [0, 0, 1, 1],
-                    "doutInv": [1, 1, 1, 1] + [1, 1, 0, 0],
+                    "rst": [1] + [0, 0, 0, 0] + [0, 0, 0, 0],
+                    "dout": [0] + [1, 0, 0, 0] + [1, 0, 0, 0],
+                    "doutinv": [1] + [0, 1, 1, 1] + [0, 1, 1, 1],
                 },
                 given=["rst"],
-            )
+            ),
         ],
     ).run()

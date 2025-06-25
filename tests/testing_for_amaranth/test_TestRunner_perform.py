@@ -33,7 +33,7 @@ from amaranth.hdl import Assert
 
 ### amarant-stuff deps
 from testing_for_amaranth import TestRunner, Story
-from amaranth_stuff.modules import Sequencer, RippleCounter
+from general_logic_for_amaranth import Sequencer, RippleCounter
 
 
 # from .resources import *
