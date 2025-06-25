@@ -23,7 +23,7 @@ If not, see <https://www.gnu.org/licenses/>.
 from amaranth.hdl import Signal
 
 ### amarant-stuff deps
-from amaranth_stuff.modules import DviTmdsEncoder
+from encoding_for_amaranth import DviTmdsEncoder
 from testing_for_amaranth import Story, TestSuiteRunner
 
 ###
