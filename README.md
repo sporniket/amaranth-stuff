@@ -1,3 +1,5 @@
+> **As of 2025-06-26, this repository has been moved to [stuff-for-amaranth](https://github.com/sporniket/stuff-for-amaranth)**
+
 # Amaranth stuff by Sporniket
 
 > [WARNING] Please read carefully this note before using this project. It contains important facts.
