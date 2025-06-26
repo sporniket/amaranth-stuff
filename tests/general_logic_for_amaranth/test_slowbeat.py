@@ -20,15 +20,11 @@ If not, see <https://www.gnu.org/licenses/>.
 """
 
 ### amaranth -- main deps
-from amaranth.hdl import ClockDomain, Module
 from amaranth.build import Platform
-
-### amaranth -- test deps
-from amaranth.hdl import Assert
 
 ### amarant-stuff deps
 from general_logic_for_amaranth import SlowBeat
-from testing_for_amaranth import TestRunner, Story, TestSuiteRunner
+from testing_for_amaranth import Story, TestSuiteRunner
 
 
 # from .resources import *
