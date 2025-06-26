@@ -49,12 +49,15 @@ class TestRunner:
 
     """A system to generate test benches to be formally verified by SymbiYosis (sby)"""
 
-    def __init__(self, deviceFactory, castingFactory, story):
+    def __init__(
+        self, deviceFactory, castingFactory, story, *, platform: Platform = None
+    ):
         if len(story.expected) == 0:
             raise ValueError(f"story.must.have.expected.participants")
         self._deviceFactory = deviceFactory
         self._castingFactory = castingFactory
         self._story = story
+        self._platform = platform
 
     def _runBehaviourTest(self):
         def testBody(m: Module, cd: ClockDomain):
@@ -72,6 +75,7 @@ class TestRunner:
             self._deviceFactory(),
             testBody,
             description=f"{self._story.title}__behaviour",
+            platform=self._platform,
         )
 
     def _runReachabilityTest(self):
@@ -91,6 +95,7 @@ class TestRunner:
             testBody,
             description=f"{self._story.title}__reachability",
             expectFailure=True,
+            platform=self._platform,
         )
 
     def run(self):

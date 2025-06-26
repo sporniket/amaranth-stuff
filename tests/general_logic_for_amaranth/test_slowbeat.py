@@ -28,7 +28,7 @@ from amaranth.hdl import Assert
 
 ### amarant-stuff deps
 from general_logic_for_amaranth import SlowBeat
-from testing_for_amaranth import TestRunner, Story
+from testing_for_amaranth import TestRunner, Story, TestSuiteRunner
 
 
 # from .resources import *
@@ -47,43 +47,44 @@ class DummyPlatformWith10HzDefaultClock(Platform):
         return None
 
 
-def test_shouldBeatAtSpecifiedFrequency():
-    def testBody(m: Module, cd: ClockDomain):
-        rst = cd.rst
-        slowbeat = m.submodules.dut
-        tb = m.submodules.testBench
-
-        tb.givenStoryBook(
-            participants={"rst": rst, "beat_p": slowbeat.beat_p},
-            stories=[
-                Story("After reset has been negated", {"rst": [1, 0]}),
-                Story(
-                    "After beat_p is up", {"rst": [0, 0], "beat_p": [0, 1]}
-                ),  # requires full sequence for beat_p
-                Story("After beat_p is down", {"rst": [0, 0], "beat_p": [0]}),
-            ],
-        )
-
-        with m.If(tb.matchesStory("After reset has been negated")):
-            m.d.sync += [
-                Assert(slowbeat.beat_p == 0),
-                Assert(slowbeat.beat_n == 1),
-            ]
-        with m.If(tb.matchesStory("After beat_p is up")):
-            m.d.sync += [
-                Assert(slowbeat.beat_p == 0),
-                Assert(slowbeat.beat_n == 1),
-            ]
-        with m.If(tb.matchesStory("After beat_p is down")):
-            m.d.sync += [
-                Assert(slowbeat.beat_p == 1),
-                Assert(slowbeat.beat_n == 0),
-            ]
-
-        m.d.sync += [Assert(slowbeat.beat_n == ~slowbeat.beat_p)]
-
-    TestRunner.perform(
-        SlowBeat(5),
-        testBody,
+def test_SlowBeat():
+    TestSuiteRunner(
+        lambda: SlowBeat(5),
+        lambda dut, clockDomain: {
+            "rst": clockDomain.rst,
+            "dout": dut.beat_p,
+            "doutInverted": dut.beat_n,
+        },
+        [
+            Story(
+                "should toggle at each clock at max frequency",
+                {
+                    "rst": [1, 0, 0, 0] + [0, 0, 0, 0] + [0, 0, 0, 0],
+                    "dout": [1, 0, 1, 0] + [1, 0, 1, 0] + [1, 0, 1, 0],
+                    "doutInverted": [0, 1, 0, 1] + [0, 1, 0, 1] + [0, 1, 0, 1],
+                },
+                given=["rst"],
+            ),
+        ],
         platform=DummyPlatformWith10HzDefaultClock(),
-    )
+    ).run()
+    TestSuiteRunner(
+        lambda: SlowBeat(2),
+        lambda dut, clockDomain: {
+            "rst": clockDomain.rst,
+            "dout": dut.beat_p,
+            "doutInverted": dut.beat_n,
+        },
+        [
+            Story(
+                "should round the period length to the highest even value",
+                {
+                    "rst": [1, 0, 0, 0] + [0, 0, 0, 0] + [0, 0, 0, 0],
+                    "dout": [1, 1, 0, 0] + [1, 1, 0, 0] + [1, 1, 0, 0],
+                    "doutInverted": [0, 0, 1, 1] + [0, 0, 1, 1] + [0, 0, 1, 1],
+                },
+                given=["rst"],
+            ),
+        ],
+        platform=DummyPlatformWith10HzDefaultClock(),
+    ).run()

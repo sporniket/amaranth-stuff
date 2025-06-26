@@ -19,6 +19,10 @@ If not, see <https://www.gnu.org/licenses/>.
 ---
 """
 
+### amaranth -- main deps
+from amaranth.build import Platform
+
+
 from .TestRunner import TestRunner
 
 
@@ -27,12 +31,15 @@ class TestSuiteRunner:
 
     """A system to generate a suite of test benches to be formally verified by SymbiYosis (sby)"""
 
-    def __init__(self, deviceFactory, castingFactory, stories):
+    def __init__(
+        self, deviceFactory, castingFactory, stories, *, platform: Platform = None
+    ):
         for i, story in enumerate(stories):
             if len(story.expected) == 0:
                 raise ValueError(f"story.must.have.expected.participants:{i}")
         self._suite = [
-            TestRunner(deviceFactory, castingFactory, story) for story in stories
+            TestRunner(deviceFactory, castingFactory, story, platform=platform)
+            for story in stories
         ]
 
     def run(self):
